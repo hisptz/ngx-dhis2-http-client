@@ -4,7 +4,7 @@ DHIS2 Http Client is angular 6 library that exposes services for fetching, posti
 
 ## installation
 
-`npm install ngx-dhis2-http-client`
+`npm install ngx-dhis2-http-client --save`
 
 ## Content
 
