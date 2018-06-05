@@ -12,13 +12,13 @@ ngx-dhis2-http-client exposes two services .i.e NgxHttpClientService and Manifes
 
 - NgxHttpClientService: This service exposes all REST-API methods .i.e. GET, POST, PUT, DELETE
   
-  - GET: `get(url: string, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
+  - GET: `get(url: string, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
   
-  - POST: `post(url: string, data: any, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
+  - POST: `post(url: string, data: any, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
   
-  - PUT: `put(url: string, data: any, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
+  - PUT: `put(url: string, data: any, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
   
-  - DELETE `delete(url: string, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
+  - DELETE `delete(url: string, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
   
 - ManifestService: This service exposes manifest two methods getManifest and getRootUrl
   

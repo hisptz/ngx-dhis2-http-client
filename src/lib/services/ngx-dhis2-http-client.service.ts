@@ -11,9 +11,10 @@ export class NgxDhis2HttpClientService {
     private systemInfoService: SystemInfoService) {
   }
 
-  get(url: string, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false): Observable<any> {
+  get(url: string, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false,
+    useRootUrl: boolean = false): Observable<any> {
     const rootUrlPromise = useRootUrl ? this.manifestService.getRootUrl() :
-      this._getApiRootUrl(preferPreviousApiVersion);
+      this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
 
     return rootUrlPromise.pipe(
       mergeMap(rootUrl =>
@@ -24,10 +25,11 @@ export class NgxDhis2HttpClientService {
     );
   }
 
-  post(url: string, data: any, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false,
+  post(url: string, data: any, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false,
+    useRootUrl: boolean = false,
     headerOptions?: any) {
     const rootUrlPromise = useRootUrl ? this.manifestService.getRootUrl() :
-      this._getApiRootUrl(preferPreviousApiVersion);
+      this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
     return rootUrlPromise.pipe(
       mergeMap(rootUrl =>
         this.httpClient.post(rootUrl + url, data).
@@ -37,9 +39,10 @@ export class NgxDhis2HttpClientService {
     );
   }
 
-  put(url: string, data: any, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false) {
+  put(url: string, data: any, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false,
+    useRootUrl: boolean = false) {
     const rootUrlPromise = useRootUrl ? this.manifestService.getRootUrl() :
-      this._getApiRootUrl(preferPreviousApiVersion);
+      this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
 
     return rootUrlPromise.pipe(
       mergeMap(rootUrl =>
@@ -50,9 +53,10 @@ export class NgxDhis2HttpClientService {
     );
   }
 
-  delete(url: string, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false) {
+  delete(url: string, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false,
+    useRootUrl: boolean = false) {
     const rootUrlPromise = useRootUrl ? this.manifestService.getRootUrl() :
-      this._getApiRootUrl(preferPreviousApiVersion);
+      this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
 
     return rootUrlPromise.pipe(
       mergeMap(rootUrl =>
@@ -85,14 +89,16 @@ export class NgxDhis2HttpClientService {
     return throwError(error);
   }
 
-  private _getApiRootUrl(preferPreviousVersion: boolean = false) {
+  private _getApiRootUrl(includeVersionNumber: boolean = false, preferPreviousVersion: boolean = false) {
     const rootUrlPromise = this.manifestService.getRootUrl().
       pipe(switchMap((rootUrl) => this.systemInfoService.getSystemVersion().pipe(map((version: number) => {
           return {rootUrl, version: (version - 1) <= 25 ? (version + 1) : version};
         }))
       ));
     return rootUrlPromise.pipe(
-      map((urlInfo: {rootUrl: string, version: number}) => `${urlInfo.rootUrl}api/${preferPreviousVersion ?
-        urlInfo.version ? ((urlInfo.version - 1) + '/') : '' : ''}`));
+      map(
+        (urlInfo: {rootUrl: string, version: number}) => `${urlInfo.rootUrl}api/${includeVersionNumber && !preferPreviousVersion ?
+          urlInfo.version + '/' : preferPreviousVersion ?
+            urlInfo.version ? ((urlInfo.version - 1) + '/') : '' : ''}`));
   }
 }
