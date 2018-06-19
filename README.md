@@ -1,63 +1,27 @@
-# DHIS2 Http Client library
+# NgxDhis2HttpClientModule
 
-DHIS2 Http Client is angular 6 library that exposes services for fetching, posting, updating and deleting dhis2 resources
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.3.
 
-## installation
+## Development server
 
-`npm install ngx-dhis2-http-client --save`
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Content
+## Code scaffolding
 
-ngx-dhis2-http-client exposes two services .i.e NgxHttpClientService and ManifestService
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-- NgxHttpClientService: This service exposes all REST-API methods .i.e. GET, POST, PUT, DELETE
-  
-  - GET: `get(url: string, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
-  
-  - POST: `post(url: string, data: any, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
-  
-  - PUT: `put(url: string, data: any, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
-  
-  - DELETE `delete(url: string, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
-  
-- ManifestService: This service exposes manifest two methods getManifest and getRootUrl
-  
-  - getManifest: This returns payload with the format
-   ```
-    {
-      name: string;
-      version: number | string;
-      description: string;
-      launch_path: string;
-      icons: {
-        16: string;
-        48: string;
-        128: string;
-      };
-      developer: {
-        name: string;
-        url: string;
-      };
-      default_locale: string;
-      activities: {
-        dhis: {
-          href: string;
-        };
-      };
-    }
-  ```  
-  - getRootUrl: This method returns rootUrl as specified in the manifest file in activities.dhis.href. This method will return `../../../` if manifest file could not be loaded or href is not specified
+## Build
 
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
-## Usage
+## Running unit tests
 
-Inject NgxHttpClientService or ManifestService any where in constructor in your angular application eg
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-```
- import { NgxDhis2HttpClientService } from 'ngx-dhis2-http-client';
- ...
- constructor(private http: NgxDhis2HttpClientService) {
-  }
- ...
-```
-NOTE: This library uses HttpClientModule from angular, make sure to import it in your app.module or any module you wish to use this library
+## Running end-to-end tests
+
+Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+
+## Further help
+
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
