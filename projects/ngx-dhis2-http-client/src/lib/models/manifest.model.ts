@@ -3,6 +3,7 @@ export interface Manifest {
   version: number | string;
   description: string;
   launch_path: string;
+  appType: string;
   icons: {
     16: string;
     48: string;
@@ -16,6 +17,8 @@ export interface Manifest {
   activities: {
     dhis: {
       href: string;
+      namespace: string;
     };
   };
+  authorities: Array<string>;
 }
