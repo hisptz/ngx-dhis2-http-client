@@ -8,7 +8,17 @@ import { SystemInfoService } from 'ngx-dhis2-http-client';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(private httpClient: NgxDhis2HttpClientService, private systemInfo: SystemInfoService) {
-    systemInfo.getSystemInfo().subscribe((info) => {console.log(info)})
+  constructor(
+    private httpClient: NgxDhis2HttpClientService,
+    private systemInfo: SystemInfoService
+  ) {
+    httpClient.get('identifiableObjects/m9A0aVIEU6a.json').subscribe(
+      res => {
+        console.log(res);
+      },
+      error => {
+        console.log(error);
+      }
+    );
   }
 }

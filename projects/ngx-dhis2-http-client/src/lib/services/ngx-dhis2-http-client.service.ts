@@ -5,63 +5,89 @@ import { SystemInfoService } from './system-info.service';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/internal/operators';
 
-@Injectable({providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class NgxDhis2HttpClientService {
-  constructor(private httpClient: HttpClient, private manifestService: ManifestService,
-    private systemInfoService: SystemInfoService) {
-  }
+  constructor(
+    private httpClient: HttpClient,
+    private manifestService: ManifestService,
+    private systemInfoService: SystemInfoService
+  ) {}
 
-  get(url: string, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false,
-    useRootUrl: boolean = false): Observable<any> {
-    const rootUrlPromise = useRootUrl ? this.manifestService.getRootUrl() :
-      this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
+  get(
+    url: string,
+    includeVersionNumber: boolean = false,
+    preferPreviousApiVersion: boolean = false,
+    useRootUrl: boolean = false
+  ): Observable<any> {
+    const rootUrlPromise = useRootUrl
+      ? this.manifestService.getRootUrl()
+      : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
 
     return rootUrlPromise.pipe(
       mergeMap(rootUrl =>
-        this.httpClient.get(rootUrl + url).
-          pipe(catchError(this._handleError))
+        this.httpClient.get(rootUrl + url).pipe(catchError(this._handleError))
       ),
       catchError(this._handleError)
     );
   }
 
-  post(url: string, data: any, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false,
+  post(
+    url: string,
+    data: any,
+    includeVersionNumber: boolean = false,
+    preferPreviousApiVersion: boolean = false,
     useRootUrl: boolean = false,
-    headerOptions?: any) {
-    const rootUrlPromise = useRootUrl ? this.manifestService.getRootUrl() :
-      this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
+    headerOptions?: any
+  ) {
+    const rootUrlPromise = useRootUrl
+      ? this.manifestService.getRootUrl()
+      : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
     return rootUrlPromise.pipe(
       mergeMap(rootUrl =>
-        this.httpClient.post(rootUrl + url, data).
-          pipe(catchError(this._handleError))
+        this.httpClient
+          .post(rootUrl + url, data)
+          .pipe(catchError(this._handleError))
       ),
       catchError(this._handleError)
     );
   }
 
-  put(url: string, data: any, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false,
-    useRootUrl: boolean = false) {
-    const rootUrlPromise = useRootUrl ? this.manifestService.getRootUrl() :
-      this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
+  put(
+    url: string,
+    data: any,
+    includeVersionNumber: boolean = false,
+    preferPreviousApiVersion: boolean = false,
+    useRootUrl: boolean = false
+  ) {
+    const rootUrlPromise = useRootUrl
+      ? this.manifestService.getRootUrl()
+      : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
 
     return rootUrlPromise.pipe(
       mergeMap(rootUrl =>
-        this.httpClient.put(rootUrl + url, data).
-          pipe(catchError(this._handleError))
+        this.httpClient
+          .put(rootUrl + url, data)
+          .pipe(catchError(this._handleError))
       ),
       catchError(this._handleError)
     );
   }
 
-  delete(url: string, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false,
-    useRootUrl: boolean = false) {
-    const rootUrlPromise = useRootUrl ? this.manifestService.getRootUrl() :
-      this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
+  delete(
+    url: string,
+    includeVersionNumber: boolean = false,
+    preferPreviousApiVersion: boolean = false,
+    useRootUrl: boolean = false
+  ) {
+    const rootUrlPromise = useRootUrl
+      ? this.manifestService.getRootUrl()
+      : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
 
     return rootUrlPromise.pipe(
       mergeMap(rootUrl =>
-        this.httpClient.delete(rootUrl + url).
-          pipe(catchError(this._handleError))
+        this.httpClient
+          .delete(rootUrl + url)
+          .pipe(catchError(this._handleError))
       ),
       catchError(this._handleError)
     );
@@ -81,7 +107,10 @@ export class NgxDhis2HttpClientService {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong,
       error = {
-        message: err.error instanceof Object ? err.error.message : err.error,
+        message:
+          err.error instanceof Object
+            ? err.error.message
+            : err.error || err.message,
         status: err.status,
         statusText: err.statusText
       };
@@ -89,16 +118,35 @@ export class NgxDhis2HttpClientService {
     return throwError(error);
   }
 
-  private _getApiRootUrl(includeVersionNumber: boolean = false, preferPreviousVersion: boolean = false) {
-    const rootUrlPromise = this.manifestService.getRootUrl().
-      pipe(switchMap((rootUrl) => this.systemInfoService.getSystemVersion().pipe(map((version: number) => {
-          return {rootUrl, version: (version - 1) <= 25 ? (version + 1) : version};
-        }))
-      ));
+  private _getApiRootUrl(
+    includeVersionNumber: boolean = false,
+    preferPreviousVersion: boolean = false
+  ) {
+    const rootUrlPromise = this.manifestService.getRootUrl().pipe(
+      switchMap(rootUrl =>
+        this.systemInfoService.getSystemVersion().pipe(
+          map((version: number) => {
+            return {
+              rootUrl,
+              version: version - 1 <= 25 ? version + 1 : version
+            };
+          })
+        )
+      )
+    );
     return rootUrlPromise.pipe(
       map(
-        (urlInfo: {rootUrl: string, version: number}) => `${urlInfo.rootUrl}api/${includeVersionNumber && !preferPreviousVersion ?
-          urlInfo.version + '/' : preferPreviousVersion ?
-            urlInfo.version ? ((urlInfo.version - 1) + '/') : '' : ''}`));
+        (urlInfo: { rootUrl: string; version: number }) =>
+          `${urlInfo.rootUrl}api/${
+            includeVersionNumber && !preferPreviousVersion
+              ? urlInfo.version + '/'
+              : preferPreviousVersion
+                ? urlInfo.version
+                  ? urlInfo.version - 1 + '/'
+                  : ''
+                : ''
+          }`
+      )
+    );
   }
 }
