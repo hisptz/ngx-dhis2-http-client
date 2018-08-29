@@ -57,7 +57,7 @@ ngx-dhis2-http-client exposes two services .i.e NgxHttpClientService and Manifes
 Inject NgxHttpClientService or ManifestService any where in constructor in your angular application eg
 
 ```
- import { NgxDhis2HttpClientService } from 'ngx-dhis2-http-client';
+ import { NgxDhis2HttpClientService } from '@hisptz/ngx-dhis2-http-client';
  ...
  constructor(private http: NgxDhis2HttpClientService) {
   }
