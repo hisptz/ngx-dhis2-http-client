@@ -12,13 +12,15 @@ export class AppComponent {
     private httpClient: NgxDhis2HttpClientService,
     private systemInfo: SystemInfoService
   ) {
-    httpClient.get('organisationUnits.json').subscribe(
-      res => {
-        console.log(res);
-      },
-      error => {
-        console.log(error);
-      }
-    );
+    httpClient
+      .get('organisationUnits.json', { isExternaLink: false })
+      .subscribe(
+        res => {
+          console.log(res);
+        },
+        error => {
+          console.log(error);
+        }
+      );
   }
 }

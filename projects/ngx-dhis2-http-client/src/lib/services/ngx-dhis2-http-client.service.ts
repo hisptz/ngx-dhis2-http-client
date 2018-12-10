@@ -4,6 +4,8 @@ import { ManifestService } from './manifest.service';
 import { SystemInfoService } from './system-info.service';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/internal/operators';
+import { HttpConfig } from '../models/http-config.model';
+import { HTTP_CONFIG } from '../constants/http-config.constant';
 
 @Injectable({ providedIn: 'root' })
 export class NgxDhis2HttpClientService {
@@ -13,17 +15,15 @@ export class NgxDhis2HttpClientService {
     private systemInfoService: SystemInfoService
   ) {}
 
-  get(
-    url: string,
-    includeVersionNumber: boolean = false,
-    preferPreviousApiVersion: boolean = false,
-    useRootUrl: boolean = false
-  ): Observable<any> {
-    const rootUrlPromise = useRootUrl
-      ? this.manifestService.getRootUrl()
-      : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
+  get(url: string, httpConfig?: HttpConfig): Observable<any> {
+    const newHttpConfig = { ...HTTP_CONFIG, ...httpConfig };
 
-    return rootUrlPromise.pipe(
+    // Make a call directly from url if is external one
+    if (newHttpConfig.isExternaLink) {
+      return this.httpClient.get(url);
+    }
+
+    return this._getSanitizedRootUrl(newHttpConfig).pipe(
       mergeMap(rootUrl =>
         this.httpClient.get(rootUrl + url).pipe(catchError(this._handleError))
       ),
@@ -31,18 +31,10 @@ export class NgxDhis2HttpClientService {
     );
   }
 
-  post(
-    url: string,
-    data: any,
-    includeVersionNumber: boolean = false,
-    preferPreviousApiVersion: boolean = false,
-    useRootUrl: boolean = false,
-    headerOptions?: any
-  ) {
-    const rootUrlPromise = useRootUrl
-      ? this.manifestService.getRootUrl()
-      : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
-    return rootUrlPromise.pipe(
+  post(url: string, data: any, httpConfig?: HttpConfig) {
+    const newHttpConfig = { ...HTTP_CONFIG, ...httpConfig };
+
+    return this._getSanitizedRootUrl(newHttpConfig).pipe(
       mergeMap(rootUrl =>
         this.httpClient
           .post(rootUrl + url, data)
@@ -52,18 +44,10 @@ export class NgxDhis2HttpClientService {
     );
   }
 
-  put(
-    url: string,
-    data: any,
-    includeVersionNumber: boolean = false,
-    preferPreviousApiVersion: boolean = false,
-    useRootUrl: boolean = false
-  ) {
-    const rootUrlPromise = useRootUrl
-      ? this.manifestService.getRootUrl()
-      : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
+  put(url: string, data: any, httpConfig?: HttpConfig) {
+    const newHttpConfig = { ...HTTP_CONFIG, ...httpConfig };
 
-    return rootUrlPromise.pipe(
+    return this._getSanitizedRootUrl(newHttpConfig).pipe(
       mergeMap(rootUrl =>
         this.httpClient
           .put(rootUrl + url, data)
@@ -73,17 +57,10 @@ export class NgxDhis2HttpClientService {
     );
   }
 
-  delete(
-    url: string,
-    includeVersionNumber: boolean = false,
-    preferPreviousApiVersion: boolean = false,
-    useRootUrl: boolean = false
-  ) {
-    const rootUrlPromise = useRootUrl
-      ? this.manifestService.getRootUrl()
-      : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
+  delete(url: string, httpConfig?: HttpConfig) {
+    const newHttpConfig = { ...HTTP_CONFIG, ...httpConfig };
 
-    return rootUrlPromise.pipe(
+    return this._getSanitizedRootUrl(newHttpConfig).pipe(
       mergeMap(rootUrl =>
         this.httpClient
           .delete(rootUrl + url)
@@ -118,6 +95,15 @@ export class NgxDhis2HttpClientService {
     return throwError(error);
   }
 
+  private _getSanitizedRootUrl(httpConfig: HttpConfig) {
+    return httpConfig.useRootUrl
+      ? this.manifestService.getRootUrl()
+      : this._getApiRootUrl(
+          httpConfig.includeVersionNumber,
+          httpConfig.preferPreviousApiVersion
+        );
+  }
+
   private _getApiRootUrl(
     includeVersionNumber: boolean = false,
     preferPreviousVersion: boolean = false
@@ -141,10 +127,10 @@ export class NgxDhis2HttpClientService {
             includeVersionNumber && !preferPreviousVersion
               ? urlInfo.version + '/'
               : preferPreviousVersion
-                ? urlInfo.version
-                  ? urlInfo.version - 1 + '/'
-                  : ''
+              ? urlInfo.version
+                ? urlInfo.version - 1 + '/'
                 : ''
+              : ''
           }`
       )
     );
