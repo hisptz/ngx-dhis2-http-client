@@ -12,7 +12,7 @@ export class AppComponent {
     private httpClient: NgxDhis2HttpClientService,
     private systemInfo: SystemInfoService
   ) {
-    httpClient.get('identifiableObjects/m9A0aVIEU6a.json').subscribe(
+    httpClient.get('organisationUnits.json').subscribe(
       res => {
         console.log(res);
       },

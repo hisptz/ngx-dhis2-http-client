@@ -1,14 +1,14 @@
 {
-    "/api": {
-      "target": "https://play.dhis2.org/2.29",
-      "secure": "false",
-      "auth":"admin:district",
-      "changeOrigin": "true"
-    },
-    "/": {
-      "target": "https://play.dhis2.org/2.29",
-      "secure": "false",
-      "auth":"admin:district",
-      "changeOrigin": "true"
-    }
+  "/api": {
+    "target": "http://localhost:8080/dhis",
+    "secure": "false",
+    "auth": "admin:district",
+    "changeOrigin": "true"
+  },
+  "/": {
+    "target": "http://localhost:8080/dhis",
+    "secure": "false",
+    "auth": "admin:district",
+    "changeOrigin": "true"
   }
+}
