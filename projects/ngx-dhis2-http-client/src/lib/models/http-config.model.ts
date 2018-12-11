@@ -6,7 +6,7 @@ export interface HttpConfig {
   useIndexDb?: boolean;
   indexDbConfig?: {
     schema: IndexDbSchema;
-    key?: string | number;
+    key?: any;
     arrayKey?: string;
   };
 }

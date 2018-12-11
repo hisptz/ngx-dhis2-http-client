@@ -39,7 +39,7 @@ export class NgxDhis2HttpClientService {
             ? of(indexDbResponse)
             : this._get(url, newHttpConfig).pipe(
                 mergeMap((response: any) =>
-                  this._saveToIndexDb(newHttpConfig, response)
+                  this._updateIndexDb(newHttpConfig, response)
                 )
               )
         )
@@ -56,6 +56,23 @@ export class NgxDhis2HttpClientService {
       mergeMap(rootUrl =>
         this.httpClient
           .post(rootUrl + url, data)
+          .pipe(
+            mergeMap((response: any) => {
+              const dataId = response.uid;
+              return newHttpConfig.useIndexDb
+                ? dataId
+                  ? this._updateIndexDb(
+                      newHttpConfig,
+                      {
+                        ...data,
+                        id: dataId
+                      },
+                      'CREATE'
+                    ).pipe(map(() => response))
+                  : of(response)
+                : of(response);
+            })
+          )
           .pipe(catchError(this._handleError))
       ),
       catchError(this._handleError)
@@ -67,9 +84,16 @@ export class NgxDhis2HttpClientService {
 
     return this._getSanitizedRootUrl(newHttpConfig).pipe(
       mergeMap(rootUrl =>
-        this.httpClient
-          .put(rootUrl + url, data)
-          .pipe(catchError(this._handleError))
+        this.httpClient.put(rootUrl + url, data).pipe(
+          mergeMap((response: any) =>
+            newHttpConfig.useIndexDb
+              ? this._updateIndexDb(newHttpConfig, data, 'UPDATE').pipe(
+                  map(() => response)
+                )
+              : of(response)
+          ),
+          catchError(this._handleError)
+        )
       ),
       catchError(this._handleError)
     );
@@ -82,6 +106,15 @@ export class NgxDhis2HttpClientService {
       mergeMap(rootUrl =>
         this.httpClient
           .delete(rootUrl + url)
+          .pipe(
+            mergeMap((response: any) =>
+              newHttpConfig.useIndexDb
+                ? this._updateIndexDb(newHttpConfig, null, 'DELETE').pipe(
+                    map(() => response)
+                  )
+                : of(response)
+            )
+          )
           .pipe(catchError(this._handleError))
       ),
       catchError(this._handleError)
@@ -163,22 +196,50 @@ export class NgxDhis2HttpClientService {
     );
   }
 
-  private _saveToIndexDb(httpConfig: HttpConfig, data: any) {
+  private _updateIndexDb(
+    httpConfig: HttpConfig,
+    requestData: any,
+    action: string = 'CREATE'
+  ) {
     const indexDbSchema: IndexDbSchema = httpConfig.indexDbConfig
       ? httpConfig.indexDbConfig.schema
       : null;
+
     const arrayKey = httpConfig.indexDbConfig
       ? httpConfig.indexDbConfig.arrayKey
       : null;
 
-    const dataArray = arrayKey ? data[arrayKey] : data;
-    return this.indexDbService.post(indexDbSchema, dataArray).pipe(
-      map(() => data),
-      catchError(e => {
-        console.warn('Could not save data into index DB, ERROR: ' + e);
+    const indexDbKey = httpConfig.indexDbConfig
+      ? httpConfig.indexDbConfig.key
+      : null;
+
+    const data = arrayKey ? requestData[arrayKey] : requestData;
+
+    switch (action) {
+      case 'CREATE':
+      case 'UPDATE':
+        return (action === 'CREATE'
+          ? this.indexDbService.post(indexDbSchema, data)
+          : this.indexDbService.put(indexDbSchema, data)
+        ).pipe(
+          map(() => data),
+          catchError(e => {
+            console.warn('Could not save data into index DB, ERROR: ' + e);
+            return of(data);
+          })
+        );
+      case 'DELETE':
+        return this.indexDbService.delete(indexDbSchema, indexDbKey).pipe(
+          map(() => data),
+          catchError(e => {
+            console.warn('Could not delete data from index DB, ERROR: ' + e);
+            return of(data);
+          })
+        );
+      default:
+        console.log('No action has been specified');
         return of(data);
-      })
-    );
+    }
   }
 
   private _fetchFromIndexDb(httpConfig: HttpConfig) {

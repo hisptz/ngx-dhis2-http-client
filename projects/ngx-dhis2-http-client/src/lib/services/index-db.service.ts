@@ -88,7 +88,7 @@ export class IndexDbService {
   /**
    * Function to get value for a particular key from the table
    */
-  findOne(schema: any, key: string | number): Observable<any[]> {
+  findOne(schema: any, key: string): Observable<any[]> {
     return new Observable((observer: any) => {
       this.create(schema)
         .pipe(mergeMap(() => this.open()))
