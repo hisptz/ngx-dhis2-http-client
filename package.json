@@ -6,6 +6,7 @@
     "start": "ng serve",
     "build": "ng build",
     "build-lib": "ng build ngx-dhis2-http-client --prod",
+    "publish": "npm run build-lib && cd dist/ngx-dhis2-http-client && npm publish --access public && cd ../../",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
