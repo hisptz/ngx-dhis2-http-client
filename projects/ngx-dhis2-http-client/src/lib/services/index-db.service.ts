@@ -29,7 +29,14 @@ export class IndexDbService {
         .subscribe((db: any) => {
           const transaction = db.transaction(schema.name, 'readwrite');
           const store = transaction.objectStore(schema.name);
-          store.put(data);
+
+          if (_.isArray(data)) {
+            _.each(data, dataItem => {
+              store.put(dataItem);
+            });
+          } else {
+            store.put(data);
+          }
 
           transaction.oncomplete = () => {
             observer.next(data);
@@ -139,16 +146,23 @@ export class IndexDbService {
   /**
    * Delete data from the db
    */
-  delete(schema: any, id: number): Observable<any> {
+  delete(schema: any, key: string | string[]): Observable<any> {
     return Observable.create((observer: any) => {
       this.open().subscribe((db: any) => {
         if (!db.objectStoreNames.contains(schema.name)) {
           const transaction = db.transaction(schema.name, 'readwrite');
           const store = transaction.objectStore(schema.name);
-          store.delete(id);
+
+          if (_.isArray(key)) {
+            _.each(key, keyItem => {
+              store.delete(keyItem);
+            });
+          } else {
+            store.delete(key);
+          }
 
           transaction.oncomplete = () => {
-            observer.next(id);
+            observer.next(key);
             db.close();
             observer.complete();
           };
