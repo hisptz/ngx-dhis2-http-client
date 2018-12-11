@@ -1,6 +1,6 @@
 # DHIS2 Http Client library
 
-DHIS2 Http Client is angular 6 library that exposes services for fetching, posting, updating and deleting dhis2 resources
+DHIS2 Http Client is angular 6 library that exposes services for fetching, posting, updating and deleting dhis2 resources, simple configurable index DB support for dhis2 APIs
 
 ## installation
 
@@ -12,13 +12,39 @@ ngx-dhis2-http-client exposes two services .i.e NgxHttpClientService and Manifes
 
 - NgxHttpClientService: This service exposes all REST-API methods .i.e. GET, POST, PUT, DELETE
 
-  - GET: `get(url: string, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
+  - GET: `get(url: string, httpConfig: HttpConfig)`
 
-  - POST: `post(url: string, data: any, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
+  - POST: `post(url: string, data: any, httpConfig: HttpConfig)`
 
-  - PUT: `put(url: string, data: any, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
+  - PUT: `put(url: string, data: any, httpConfig: HttpConfig)`
 
-  - DELETE `delete(url: string, includeVersionNumber: boolean = false, preferPreviousApiVersion: boolean = false, useRootUrl: boolean = false)`
+  - DELETE `delete(url: string, httpConfig: HttpConfig)`
+
+  where HttpConfig has a data model of
+
+  ```
+   {
+    includeVersionNumber?: boolean;
+    preferPreviousApiVersion?: boolean;
+    useRootUrl?: boolean;
+    isExternalLink?: boolean;
+    useIndexDb?: boolean;
+    indexDbConfig?: {
+      schema: IndexDbSchema;
+      key?: string | number;
+      arrayKey?: string;
+    };
+  }
+  ```
+
+  and IndexDbSchema with model
+
+  ```
+  {
+    name: string;
+    keyPath: string;
+  }
+  ```
 
 - ManifestService: This service exposes manifest two methods getManifest and getRootUrl
   - getManifest: This returns payload with the format
