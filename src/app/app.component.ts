@@ -13,7 +13,13 @@ export class AppComponent {
     private systemInfo: SystemInfoService
   ) {
     httpClient
-      .get('organisationUnits.json', { isExternaLink: false })
+      .get('organisationUnits.json', {
+        useIndexDb: true,
+        indexDbConfig: {
+          schema: { name: 'organisationUnits', keyPath: 'id' },
+          arrayKey: 'organisationUnits'
+        }
+      })
       .subscribe(
         res => {
           console.log(res);

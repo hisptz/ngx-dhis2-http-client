@@ -5,5 +5,5 @@ export const HTTP_CONFIG: HttpConfig = {
   preferPreviousApiVersion: false,
   useRootUrl: false,
   useIndexDb: false,
-  isExternaLink: false
+  isExternalLink: false
 };
