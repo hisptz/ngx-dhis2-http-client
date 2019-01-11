@@ -71,7 +71,7 @@ export class IndexDbService {
             store.add(data);
           }
 
-          transaction.onsuccess = () => {
+          transaction.oncomplete = () => {
             observer.next(data);
             db.close();
             observer.complete();

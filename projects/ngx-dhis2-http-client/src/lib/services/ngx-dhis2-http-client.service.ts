@@ -222,23 +222,23 @@ export class NgxDhis2HttpClientService {
           ? this.indexDbService.post(indexDbSchema, data)
           : this.indexDbService.put(indexDbSchema, data)
         ).pipe(
-          map(() => data),
+          map(() => requestData),
           catchError(e => {
             console.warn('Could not save data into index DB, ERROR: ' + e);
-            return of(data);
+            return of(requestData);
           })
         );
       case 'DELETE':
         return this.indexDbService.delete(indexDbSchema, indexDbKey).pipe(
-          map(() => data),
+          map(() => requestData),
           catchError(e => {
             console.warn('Could not delete data from index DB, ERROR: ' + e);
-            return of(data);
+            return of(requestData);
           })
         );
       default:
         console.log('No action has been specified');
-        return of(data);
+        return of(requestData);
     }
   }
 
