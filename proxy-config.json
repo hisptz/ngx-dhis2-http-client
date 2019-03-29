@@ -1,12 +1,12 @@
 {
   "/api": {
-    "target": "http://localhost:8080/dhis",
+    "target": "https://play.dhis2.org/2.29",
     "secure": "false",
     "auth": "admin:district",
     "changeOrigin": "true"
   },
   "/": {
-    "target": "http://localhost:8080/dhis",
+    "target": "https://play.dhis2.org/2.29",
     "secure": "false",
     "auth": "admin:district",
     "changeOrigin": "true"
