@@ -4,8 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --prod --aot",
     "build-lib": "ng build ngx-dhis2-http-client --prod",
+    "build-lib-dev": "npm run build-lib && cd dist/ngx-dhis2-http-client && npm pack && cd ../../ && npm install dist/ngx-dhis2-http-client/*.tgz",
     "publish": "npm run build-lib && cd dist/ngx-dhis2-http-client && npm publish --access public && cd ../../",
     "test": "ng test",
     "lint": "ng lint",
