@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NgxDhis2HttpClientService } from 'ngx-dhis2-http-client';
-import { SystemInfoService } from 'ngx-dhis2-http-client';
+import { SystemInfoService } from '@hisptz/ngx-dhis2-http-client';
 
 @Component({
   selector: 'app-root',
