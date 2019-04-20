@@ -13,11 +13,11 @@ export class AppComponent {
     private systemInfo: SystemInfoService
   ) {
     httpClient
-      .get('organisationUnits.json', {
+      .get('dimensions.json', {
         useIndexDb: true,
         indexDbConfig: {
-          schema: { name: 'organisationUnits', keyPath: 'id' },
-          arrayKey: 'organisationUnits'
+          schema: { name: 'dimensions', keyPath: 'id' },
+          arrayKey: 'dimensions'
         }
       })
       .subscribe(
