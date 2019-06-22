@@ -1,19 +1,28 @@
 import { ModuleWithProviders, NgModule, APP_INITIALIZER } from '@angular/core';
-import { NgxDhis2HttpClientService } from './services';
+import {
+  NgxDhis2HttpClientService,
+  IndexDbServiceConfig,
+  IndexDbService
+} from './services';
+import { HttpClientModule } from '@angular/common/http';
 
-export function initialize(ngxDhis2HttpService: NgxDhis2HttpClientService) {
-  return () => ngxDhis2HttpService.init();
+export function initializeDb(indexDbServiceConfig: IndexDbServiceConfig) {
+  return () => new IndexDbService(indexDbServiceConfig);
 }
 
-@NgModule({})
+@NgModule({
+  imports: [HttpClientModule]
+})
 export class NgxDhis2HttpClientModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(config: IndexDbServiceConfig): ModuleWithProviders {
     return {
       ngModule: NgxDhis2HttpClientModule,
       providers: [
+        { provide: IndexDbServiceConfig, useValue: config },
         {
           provide: APP_INITIALIZER,
-          useFactory: initialize,
+          useFactory: initializeDb,
+          deps: [IndexDbServiceConfig],
           multi: true
         }
       ]

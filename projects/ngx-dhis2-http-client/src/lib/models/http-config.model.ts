@@ -5,9 +5,7 @@ export interface HttpConfig {
   isExternalLink?: boolean;
   useIndexDb?: boolean;
   indexDbConfig?: {
-    schema: IndexDbSchema;
-    key?: any;
-    arrayKey?: string;
+    schema: string;
   };
 }
 
