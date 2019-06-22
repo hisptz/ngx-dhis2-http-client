@@ -1,15 +1,12 @@
-import { ModuleWithProviders, NgModule, APP_INITIALIZER } from '@angular/core';
-import {
-  NgxDhis2HttpClientService,
-  IndexDbServiceConfig,
-  IndexDbService
-} from './services';
 import { HttpClientModule } from '@angular/common/http';
+import { APP_INITIALIZER, ModuleWithProviders, NgModule } from '@angular/core';
+
+import { IndexDbService, IndexDbServiceConfig } from './services';
 
 export function initializeDb(indexDbServiceConfig: IndexDbServiceConfig) {
   return () => new IndexDbService(indexDbServiceConfig);
 }
-
+// @dynamic
 @NgModule({
   imports: [HttpClientModule]
 })
