@@ -4,6 +4,8 @@ import { ManifestService } from './manifest.service';
 import { SystemInfoService } from './system-info.service';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, mergeMap, switchMap } from 'rxjs/internal/operators';
+import { HttpConfig } from '../models/http-config.model';
+import { HTTP_CONFIG } from '../constants/http-config.constant';
 
 @Injectable({ providedIn: 'root' })
 export class NgxDhis2HttpClientService {
@@ -18,36 +20,19 @@ export class NgxDhis2HttpClientService {
 
   init() {}
 
-  get(
-    url: string,
-    includeVersionNumber: boolean = false,
-    preferPreviousApiVersion: boolean = false,
-    useRootUrl: boolean = false
-  ): Observable<any> {
-    const rootUrlPromise = useRootUrl
-      ? this._rootUrl$
-      : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
+  get(url: string, httpConfig?: HttpConfig): Observable<any> {
+    const newHttpConfig = this._getHttpConfig(httpConfig);
 
-    return rootUrlPromise.pipe(
-      mergeMap(rootUrl =>
-        this.httpClient.get(rootUrl + url).pipe(catchError(this._handleError))
-      ),
-      catchError(this._handleError)
-    );
+    // Make a call directly from url if is external one
+    if (newHttpConfig.isExternalLink) {
+      return this.httpClient.get(url);
+    }
+
+    return this._get(url, newHttpConfig);
   }
 
-  post(
-    url: string,
-    data: any,
-    includeVersionNumber: boolean = false,
-    preferPreviousApiVersion: boolean = false,
-    useRootUrl: boolean = false,
-    headerOptions?: any
-  ) {
-    const rootUrlPromise = useRootUrl
-      ? this._rootUrl$
-      : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
-    return rootUrlPromise.pipe(
+  post(url: string, data: any, httpConfig?: HttpConfig) {
+    return this._getRootUrl(this._getHttpConfig(httpConfig)).pipe(
       mergeMap(rootUrl =>
         this.httpClient
           .post(rootUrl + url, data)
@@ -57,18 +42,8 @@ export class NgxDhis2HttpClientService {
     );
   }
 
-  put(
-    url: string,
-    data: any,
-    includeVersionNumber: boolean = false,
-    preferPreviousApiVersion: boolean = false,
-    useRootUrl: boolean = false
-  ) {
-    const rootUrlPromise = useRootUrl
-      ? this._rootUrl$
-      : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
-
-    return rootUrlPromise.pipe(
+  put(url: string, data: any, httpConfig?: HttpConfig) {
+    return this._getRootUrl(this._getHttpConfig(httpConfig)).pipe(
       mergeMap(rootUrl =>
         this.httpClient
           .put(rootUrl + url, data)
@@ -78,17 +53,8 @@ export class NgxDhis2HttpClientService {
     );
   }
 
-  delete(
-    url: string,
-    includeVersionNumber: boolean = false,
-    preferPreviousApiVersion: boolean = false,
-    useRootUrl: boolean = false
-  ) {
-    const rootUrlPromise = useRootUrl
-      ? this._rootUrl$
-      : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
-
-    return rootUrlPromise.pipe(
+  delete(url: string, httpConfig?: HttpConfig) {
+    return this._getRootUrl(this._getHttpConfig(httpConfig)).pipe(
       mergeMap(rootUrl =>
         this.httpClient
           .delete(rootUrl + url)
@@ -99,6 +65,27 @@ export class NgxDhis2HttpClientService {
   }
 
   // private methods
+
+  private _get(url, httpConfig: HttpConfig) {
+    return this._getRootUrl(httpConfig).pipe(
+      mergeMap(rootUrl =>
+        this.httpClient.get(rootUrl + url).pipe(catchError(this._handleError))
+      ),
+      catchError(this._handleError)
+    );
+  }
+
+  private _getHttpConfig(httpConfig: HttpConfig) {
+    return { ...HTTP_CONFIG, ...(httpConfig || {}) };
+  }
+  private _getRootUrl(httpConfig: HttpConfig) {
+    return httpConfig.useRootUrl
+      ? this._rootUrl$
+      : this._getApiRootUrl(
+          httpConfig.includeVersionNumber,
+          httpConfig.preferPreviousApiVersion
+        );
+  }
   private _handleError(err: HttpErrorResponse) {
     let error = null;
     if (err.error instanceof ErrorEvent) {
