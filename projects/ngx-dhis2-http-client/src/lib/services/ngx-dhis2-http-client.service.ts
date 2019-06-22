@@ -7,11 +7,16 @@ import { catchError, map, mergeMap, switchMap } from 'rxjs/internal/operators';
 
 @Injectable({ providedIn: 'root' })
 export class NgxDhis2HttpClientService {
+  private _rootUrl$: Observable<string>;
   constructor(
     private httpClient: HttpClient,
     private manifestService: ManifestService,
     private systemInfoService: SystemInfoService
-  ) {}
+  ) {
+    this._rootUrl$ = this.manifestService.getRootUrl();
+  }
+
+  init() {}
 
   get(
     url: string,
@@ -20,7 +25,7 @@ export class NgxDhis2HttpClientService {
     useRootUrl: boolean = false
   ): Observable<any> {
     const rootUrlPromise = useRootUrl
-      ? this.manifestService.getRootUrl()
+      ? this._rootUrl$
       : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
 
     return rootUrlPromise.pipe(
@@ -40,7 +45,7 @@ export class NgxDhis2HttpClientService {
     headerOptions?: any
   ) {
     const rootUrlPromise = useRootUrl
-      ? this.manifestService.getRootUrl()
+      ? this._rootUrl$
       : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
     return rootUrlPromise.pipe(
       mergeMap(rootUrl =>
@@ -60,7 +65,7 @@ export class NgxDhis2HttpClientService {
     useRootUrl: boolean = false
   ) {
     const rootUrlPromise = useRootUrl
-      ? this.manifestService.getRootUrl()
+      ? this._rootUrl$
       : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
 
     return rootUrlPromise.pipe(
@@ -80,7 +85,7 @@ export class NgxDhis2HttpClientService {
     useRootUrl: boolean = false
   ) {
     const rootUrlPromise = useRootUrl
-      ? this.manifestService.getRootUrl()
+      ? this._rootUrl$
       : this._getApiRootUrl(includeVersionNumber, preferPreviousApiVersion);
 
     return rootUrlPromise.pipe(
@@ -122,17 +127,17 @@ export class NgxDhis2HttpClientService {
     includeVersionNumber: boolean = false,
     preferPreviousVersion: boolean = false
   ) {
-    const rootUrlPromise = this.manifestService.getRootUrl().pipe(
-      switchMap(rootUrl =>
-        this.systemInfoService.getSystemVersion().pipe(
+    const rootUrlPromise = this._rootUrl$.pipe(
+      switchMap(rootUrl => {
+        return this.systemInfoService.getSystemVersion().pipe(
           map((version: number) => {
             return {
               rootUrl,
               version: version - 1 <= 25 ? version + 1 : version
             };
           })
-        )
-      )
+        );
+      })
     );
     return rootUrlPromise.pipe(
       map(
@@ -141,10 +146,10 @@ export class NgxDhis2HttpClientService {
             includeVersionNumber && !preferPreviousVersion
               ? urlInfo.version + '/'
               : preferPreviousVersion
-                ? urlInfo.version
-                  ? urlInfo.version - 1 + '/'
-                  : ''
+              ? urlInfo.version
+                ? urlInfo.version - 1 + '/'
                 : ''
+              : ''
           }`
       )
     );
