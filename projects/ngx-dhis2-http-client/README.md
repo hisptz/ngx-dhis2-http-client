@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/hisptz/ngx-dhis2-http-client.svg?branch=master)](https://travis-ci.org/hisptz/ngx-dhis2-http-client)
+[![dependencies Status](https://david-dm.org/hisptz/ngx-dhis2-http-client/status.svg)](https://david-dm.org/hisptz/ngx-dhis2-http-client)
+[![devDependencies Status](https://david-dm.org/hisptz/ngx-dhis2-http-client/dev-status.svg)](https://david-dm.org/hisptz/ngx-dhis2-http-client?type=dev)
+[![Maintainability](https://api.codeclimate.com/v1/badges/d210db085cf3a690d705/maintainability)](https://codeclimate.com/github/hisptz/ngx-dhis2-http-client/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/d210db085cf3a690d705/test_coverage)](https://codeclimate.com/github/hisptz/ngx-dhis2-http-client/test_coverage)
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
 # DHIS2 Http Client library
@@ -101,7 +106,7 @@ where in the models, for example user will be a table "users" and 'id' will be a
 
 Inject NgxHttpClientService or ManifestService any where in constructor in your angular application eg
 
-```
+```ts
  import { NgxDhis2HttpClientService } from '@iapps/ngx-dhis2-http-client';
  ...
  constructor(private http: NgxDhis2HttpClientService) {
