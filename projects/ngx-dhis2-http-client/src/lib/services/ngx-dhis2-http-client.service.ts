@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ManifestService } from './manifest.service';
 import { SystemInfoService } from './system-info.service';
 import { Observable, throwError, of } from 'rxjs';
-import { catchError, map, mergeMap, switchMap } from 'rxjs/internal/operators';
+import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
 import { HttpConfig } from '../models/http-config.model';
 import { HTTP_CONFIG } from '../constants/http-config.constant';
 import { IndexDbService } from './index-db.service';
@@ -75,6 +75,7 @@ export class NgxDhis2HttpClientService {
   }
 
   private _getFromServer(url, httpConfig: HttpConfig) {
+    console.log(url);
     return this._getRootUrl(httpConfig).pipe(
       mergeMap(rootUrl =>
         this.httpClient.get(rootUrl + url).pipe(catchError(this._handleError))
