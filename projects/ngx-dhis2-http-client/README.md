@@ -1,3 +1,5 @@
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+
 # DHIS2 Http Client library
 
 DHIS2 Http Client is angular 6+ library that exposes services for fetching, posting, updating and deleting dhis2 resources, simple configurable index DB support for dhis2 APIs

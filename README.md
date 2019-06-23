@@ -1,6 +1,8 @@
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+
 # NgxDhis2HttpClientModule
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.3.
+DHIS2 Http Client is angular 6+ library that exposes services for fetching, posting, updating and deleting dhis2 resources, simple configurable index DB support for dhis2 APIs
 
 ## Development server
 
