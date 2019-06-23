@@ -106,7 +106,7 @@ where in the models, for example user will be a table "users" and 'id' will be a
 
 Inject NgxHttpClientService or ManifestService any where in constructor in your angular application eg
 
-```
+```ts
  import { NgxDhis2HttpClientService } from '@iapps/ngx-dhis2-http-client';
  ...
  constructor(private http: NgxDhis2HttpClientService) {
