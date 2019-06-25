@@ -1,35 +1,50 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 import { Manifest } from '../models';
 
+interface ManifestState {
+  manifest: Manifest;
+  loaded: boolean;
+  initiated: boolean;
+  defaultRootUrl: string;
+}
 @Injectable({ providedIn: 'root' })
 export class ManifestService {
-  private _manifest: Manifest;
-  private _defaultRootUrl: string;
-  private _manifestInitialized: boolean;
-  private _manifestLoaded$: Subject<boolean>;
+  private _manifestState: ManifestState;
 
   constructor(private httpClient: HttpClient) {
-    this._defaultRootUrl = '../../../';
-    this._manifestInitialized = false;
-    this._manifestLoaded$ = new Subject();
+    this._manifestState = {
+      manifest: null,
+      loaded: false,
+      initiated: false,
+      defaultRootUrl: '../../../'
+    };
 
     this._init();
   }
 
   private _init(): void {
-    if (!this._manifestInitialized) {
-      this._manifestInitialized = true;
+    if (!this._manifestState.initiated) {
+      this._manifestState = {
+        ...this._manifestState,
+        initiated: true
+      };
+
       this.httpClient.get<Manifest>('manifest.webapp').subscribe(
         (manifest: Manifest) => {
-          this._manifest = manifest;
-          this._manifestLoaded$.next(true);
+          this._manifestState = {
+            ...this._manifestState,
+            manifest,
+            loaded: true
+          };
         },
         () => {
-          this._manifestLoaded$.next(true);
+          this._manifestState = {
+            ...this._manifestState,
+            loaded: true
+          };
           console.warn(
             'Manifest file could not be loaded, default options have been used instead'
           );
@@ -38,29 +53,31 @@ export class ManifestService {
     }
   }
 
-  private _loaded(): Observable<boolean> {
-    return this._manifestLoaded$.asObservable();
-  }
-
-  get(): Observable<Manifest> {
-    return this._loaded().pipe(
-      filter(loaded => loaded),
-      map(() => this._manifest)
-    );
+  getManifest(): Observable<Manifest> {
+    return new Observable(observer => {
+      if (this._manifestState.loaded) {
+        observer.next(this._manifestState.manifest);
+        observer.complete();
+      }
+    });
   }
 
   public getRootUrl(): Observable<string> {
-    return this.get().pipe(
-      map((manifest: Manifest) => {
-        if (!manifest) {
-          return this._defaultRootUrl;
-        }
-        return manifest.activities &&
-          manifest.activities.dhis &&
-          manifest.activities.dhis.href
-          ? manifest.activities.dhis.href
-          : this._defaultRootUrl;
-      })
-    );
+    return new Observable(observer => {
+      const manifest = this._manifestState.manifest;
+      if (!manifest) {
+        observer.next(this._manifestState.defaultRootUrl);
+        observer.complete();
+      } else {
+        observer.next(
+          manifest.activities &&
+            manifest.activities.dhis &&
+            manifest.activities.dhis.href
+            ? manifest.activities.dhis.href
+            : this._manifestState.defaultRootUrl
+        );
+        observer.complete();
+      }
+    });
   }
 }

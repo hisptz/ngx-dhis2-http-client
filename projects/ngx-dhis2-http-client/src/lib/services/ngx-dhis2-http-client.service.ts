@@ -16,9 +16,7 @@ export class NgxDhis2HttpClientService {
     private manifestService: ManifestService,
     private systemInfoService: SystemInfoService,
     private indexDbService: IndexDbService
-  ) {
-    this._rootUrl$ = this.manifestService.getRootUrl();
-  }
+  ) {}
 
   get(url: string, httpConfig?: HttpConfig): Observable<any> {
     const newHttpConfig = this._getHttpConfig(httpConfig);
@@ -75,7 +73,6 @@ export class NgxDhis2HttpClientService {
   }
 
   private _getFromServer(url, httpConfig: HttpConfig) {
-    console.log(url);
     return this._getRootUrl(httpConfig).pipe(
       mergeMap(rootUrl =>
         this.httpClient.get(rootUrl + url).pipe(catchError(this._handleError))
@@ -160,7 +157,7 @@ export class NgxDhis2HttpClientService {
   }
   private _getRootUrl(httpConfig: HttpConfig) {
     return httpConfig.useRootUrl
-      ? this._rootUrl$
+      ? this.manifestService.getRootUrl()
       : this._getApiRootUrl(
           httpConfig.includeVersionNumber,
           httpConfig.preferPreviousApiVersion
@@ -194,7 +191,7 @@ export class NgxDhis2HttpClientService {
     includeVersionNumber: boolean = false,
     preferPreviousVersion: boolean = false
   ) {
-    const rootUrlPromise = this._rootUrl$.pipe(
+    const rootUrlPromise = this.manifestService.getRootUrl().pipe(
       switchMap(rootUrl => {
         return this.systemInfoService.getSystemVersion().pipe(
           map((version: number) => {

@@ -43,5 +43,13 @@ export class AppComponent {
           console.log(error);
         }
       );
+
+    this.httpClient
+      .get('dhis-web-commons-stream/ping.action', {
+        useRootUrl: true
+      })
+      .subscribe(res => {
+        console.log(res);
+      });
   }
 }
