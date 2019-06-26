@@ -1,0 +1,10 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "package.json",
+        "projects/ngx-dhis2-http-client/package.json"
+      ]
+    }
+  }
+}
