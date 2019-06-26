@@ -1,7 +1,10 @@
 import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, ModuleWithProviders, NgModule } from '@angular/core';
 
-import { IndexDbService, IndexDbServiceConfig } from './services';
+import {
+  IndexDbService,
+  IndexDbServiceConfig
+} from './services/index-db.service';
 
 export function initializeDb(indexDbServiceConfig: IndexDbServiceConfig) {
   return () => new IndexDbService(indexDbServiceConfig);

@@ -1,35 +1,34 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
-import { Manifest } from '../models';
+import { Manifest } from '../models/manifest.model';
 
 @Injectable({ providedIn: 'root' })
 export class ManifestService {
   private _manifest: Manifest;
+  private _initiated: boolean;
+  private _loaded$: BehaviorSubject<boolean>;
   private _defaultRootUrl: string;
-  private _manifestInitialized: boolean;
-  private _manifestLoaded$: Subject<boolean>;
 
   constructor(private httpClient: HttpClient) {
+    this._loaded$ = new BehaviorSubject<boolean>(false);
     this._defaultRootUrl = '../../../';
-    this._manifestInitialized = false;
-    this._manifestLoaded$ = new Subject();
 
     this._init();
   }
 
   private _init(): void {
-    if (!this._manifestInitialized) {
-      this._manifestInitialized = true;
+    if (!this._initiated) {
+      this._initiated = true;
       this.httpClient.get<Manifest>('manifest.webapp').subscribe(
         (manifest: Manifest) => {
+          this._loaded$.next(true);
           this._manifest = manifest;
-          this._manifestLoaded$.next(true);
         },
         () => {
-          this._manifestLoaded$.next(true);
+          this._loaded$.next(true);
           console.warn(
             'Manifest file could not be loaded, default options have been used instead'
           );
@@ -39,10 +38,10 @@ export class ManifestService {
   }
 
   private _loaded(): Observable<boolean> {
-    return this._manifestLoaded$.asObservable();
+    return this._loaded$.asObservable();
   }
 
-  get(): Observable<Manifest> {
+  getManifest(): Observable<Manifest> {
     return this._loaded().pipe(
       filter(loaded => loaded),
       map(() => this._manifest)
@@ -50,11 +49,12 @@ export class ManifestService {
   }
 
   public getRootUrl(): Observable<string> {
-    return this.get().pipe(
+    return this.getManifest().pipe(
       map((manifest: Manifest) => {
         if (!manifest) {
           return this._defaultRootUrl;
         }
+
         return manifest.activities &&
           manifest.activities.dhis &&
           manifest.activities.dhis.href
