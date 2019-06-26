@@ -55,5 +55,9 @@ export class AppComponent {
     this.httpClient.me().subscribe(me => {
       console.log(me);
     });
+
+    this.httpClient.get('me/dashboard.json').subscribe(me => {
+      console.log(me);
+    });
   }
 }

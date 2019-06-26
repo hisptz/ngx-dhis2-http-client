@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 
 import { HTTP_CONFIG } from '../constants/http-config.constant';
 import { HttpConfig } from '../models/http-config.model';
@@ -11,6 +11,7 @@ import { IndexDbService } from './index-db.service';
 import { ManifestService } from './manifest.service';
 import { SystemInfoService } from './system-info.service';
 import { UserService } from './user.service';
+import { ErrorMessage } from '../models/error-message.model';
 
 @Injectable({ providedIn: 'root' })
 export class NgxDhis2HttpClientService {
@@ -184,11 +185,11 @@ export class NgxDhis2HttpClientService {
         );
   }
   private _handleError(err: HttpErrorResponse) {
-    let error = null;
+    let error: ErrorMessage = null;
     if (err.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
       error = {
-        message: err.error,
+        message: err.error.toString(),
         status: err.status,
         statusText: err.statusText
       };
@@ -211,31 +212,23 @@ export class NgxDhis2HttpClientService {
     includeVersionNumber: boolean = false,
     preferPreviousVersion: boolean = false
   ) {
-    const rootUrlPromise = this.manifestService.getRootUrl().pipe(
-      switchMap(rootUrl => {
+    return this.manifestService.getRootUrl().pipe(
+      mergeMap(rootUrl => {
         return this.systemInfoService.getSystemVersion().pipe(
           map((version: number) => {
-            return {
-              rootUrl,
-              version: version - 1 <= 25 ? version + 1 : version
-            };
+            const versionNumber = version - 1 <= 25 ? version + 1 : version;
+            return `${rootUrl}api/${
+              includeVersionNumber && !preferPreviousVersion
+                ? versionNumber + '/'
+                : preferPreviousVersion
+                ? versionNumber
+                  ? versionNumber - 1 + '/'
+                  : ''
+                : ''
+            }`;
           })
         );
       })
-    );
-    return rootUrlPromise.pipe(
-      map(
-        (urlInfo: { rootUrl: string; version: number }) =>
-          `${urlInfo.rootUrl}api/${
-            includeVersionNumber && !preferPreviousVersion
-              ? urlInfo.version + '/'
-              : preferPreviousVersion
-              ? urlInfo.version
-                ? urlInfo.version - 1 + '/'
-                : ''
-              : ''
-          }`
-      )
     );
   }
 }

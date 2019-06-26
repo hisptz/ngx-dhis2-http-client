@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable, Subject } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { filter, map, switchMap, mergeMap } from 'rxjs/operators';
 
 import { ManifestService } from './manifest.service';
 
@@ -26,7 +26,7 @@ export class SystemInfoService {
       this.manifestService
         .getRootUrl()
         .pipe(
-          switchMap((rootUrl: string) =>
+          mergeMap((rootUrl: string) =>
             forkJoin(
               this.httpClient.get(`${rootUrl}api/system/info`),
               this.httpClient.get(`${rootUrl}api/systemSettings`)
