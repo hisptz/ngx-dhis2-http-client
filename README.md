@@ -3,7 +3,7 @@
 [![devDependencies Status](https://david-dm.org/hisptz/ngx-dhis2-http-client/dev-status.svg)](https://david-dm.org/hisptz/ngx-dhis2-http-client?type=dev)
 [![Maintainability](https://api.codeclimate.com/v1/badges/d210db085cf3a690d705/maintainability)](https://codeclimate.com/github/hisptz/ngx-dhis2-http-client/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/d210db085cf3a690d705/test_coverage)](https://codeclimate.com/github/hisptz/ngx-dhis2-http-client/test_coverage)
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/) [![Greenkeeper badge](https://badges.greenkeeper.io/hisptz/ngx-dhis2-http-client.svg)](https://greenkeeper.io/)
 
 # NgxDhis2HttpClientModule
 
