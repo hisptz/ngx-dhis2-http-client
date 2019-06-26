@@ -1,21 +1,25 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
+
+import { HTTP_CONFIG } from '../constants/http-config.constant';
+import { HttpConfig } from '../models/http-config.model';
+import { Manifest } from '../models/manifest.model';
+import { User } from '../models/user.model';
+import { IndexDbService } from './index-db.service';
 import { ManifestService } from './manifest.service';
 import { SystemInfoService } from './system-info.service';
-import { Observable, throwError, of } from 'rxjs';
-import { catchError, map, mergeMap, switchMap } from 'rxjs/operators';
-import { HttpConfig } from '../models/http-config.model';
-import { HTTP_CONFIG } from '../constants/http-config.constant';
-import { IndexDbService } from './index-db.service';
+import { UserService } from './user.service';
 
 @Injectable({ providedIn: 'root' })
 export class NgxDhis2HttpClientService {
-  private _rootUrl$: Observable<string>;
   constructor(
     private httpClient: HttpClient,
     private manifestService: ManifestService,
     private systemInfoService: SystemInfoService,
-    private indexDbService: IndexDbService
+    private indexDbService: IndexDbService,
+    private userService: UserService
   ) {}
 
   get(url: string, httpConfig?: HttpConfig): Observable<any> {
@@ -49,6 +53,22 @@ export class NgxDhis2HttpClientService {
       ),
       catchError(this._handleError)
     );
+  }
+
+  me(): Observable<User> {
+    return this.userService.getCurrentUser();
+  }
+
+  systemInfo(): Observable<any> {
+    return this.systemInfoService.get();
+  }
+
+  rootUrl(): Observable<string> {
+    return this.manifestService.getRootUrl();
+  }
+
+  manifest(): Observable<Manifest> {
+    return this.manifestService.getManifest();
   }
 
   delete(url: string, httpConfig?: HttpConfig) {

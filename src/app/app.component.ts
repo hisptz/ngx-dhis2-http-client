@@ -51,5 +51,9 @@ export class AppComponent {
       .subscribe(res => {
         console.log(res);
       });
+
+    this.httpClient.me().subscribe(me => {
+      console.log(me);
+    });
   }
 }

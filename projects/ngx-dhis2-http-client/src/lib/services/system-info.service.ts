@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
-import { forkJoin, Observable, of, Subject } from 'rxjs';
-import { ManifestService } from './manifest.service';
-import { map, switchMap, tap, filter } from 'rxjs/internal/operators';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { forkJoin, Observable, Subject } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
+
+import { ManifestService } from './manifest.service';
 
 @Injectable({ providedIn: 'root' })
 export class SystemInfoService {
