@@ -10,10 +10,12 @@ export class ManifestService {
   private _manifest: Manifest;
   private _initiated: boolean;
   private _loaded$: BehaviorSubject<boolean>;
+  private loaded$: Observable<boolean>;
   private _defaultRootUrl: string;
 
   constructor(private httpClient: HttpClient) {
     this._loaded$ = new BehaviorSubject<boolean>(false);
+    this.loaded$ = this._loaded$.asObservable();
     this._defaultRootUrl = '../../../';
 
     this._init();
@@ -37,12 +39,8 @@ export class ManifestService {
     }
   }
 
-  private _loaded(): Observable<boolean> {
-    return this._loaded$.asObservable();
-  }
-
   getManifest(): Observable<Manifest> {
-    return this._loaded().pipe(
+    return this.loaded$.pipe(
       filter(loaded => loaded),
       map(() => this._manifest)
     );

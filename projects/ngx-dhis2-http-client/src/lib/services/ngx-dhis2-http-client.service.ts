@@ -177,12 +177,19 @@ export class NgxDhis2HttpClientService {
     return { ...HTTP_CONFIG, ...(httpConfig || {}) };
   }
   private _getRootUrl(httpConfig: HttpConfig) {
-    return httpConfig.useRootUrl
-      ? this.manifestService.getRootUrl()
-      : this._getApiRootUrl(
+    return this.manifestService.getRootUrl().pipe(
+      mergeMap(rootUrl => {
+        if (httpConfig.useRootUrl) {
+          return of(rootUrl);
+        }
+
+        return this._getApiRootUrl(
+          rootUrl,
           httpConfig.includeVersionNumber,
           httpConfig.preferPreviousApiVersion
         );
+      })
+    );
   }
   private _handleError(err: HttpErrorResponse) {
     let error: ErrorMessage = null;
@@ -209,25 +216,22 @@ export class NgxDhis2HttpClientService {
   }
 
   private _getApiRootUrl(
+    rootUrl: string,
     includeVersionNumber: boolean = false,
     preferPreviousVersion: boolean = false
   ) {
-    return this.manifestService.getRootUrl().pipe(
-      mergeMap(rootUrl => {
-        return this.systemInfoService.getSystemVersion().pipe(
-          map((version: number) => {
-            const versionNumber = version - 1 <= 25 ? version + 1 : version;
-            return `${rootUrl}api/${
-              includeVersionNumber && !preferPreviousVersion
-                ? versionNumber + '/'
-                : preferPreviousVersion
-                ? versionNumber
-                  ? versionNumber - 1 + '/'
-                  : ''
-                : ''
-            }`;
-          })
-        );
+    return this.systemInfoService.getSystemVersion().pipe(
+      map((version: number) => {
+        const versionNumber = version - 1 <= 25 ? version + 1 : version;
+        return `${rootUrl}api/${
+          includeVersionNumber && !preferPreviousVersion
+            ? versionNumber + '/'
+            : preferPreviousVersion
+            ? versionNumber
+              ? versionNumber - 1 + '/'
+              : ''
+            : ''
+        }`;
       })
     );
   }

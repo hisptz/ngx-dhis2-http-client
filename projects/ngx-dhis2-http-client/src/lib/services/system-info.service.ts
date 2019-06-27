@@ -1,21 +1,24 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, Subject } from 'rxjs';
-import { filter, map, switchMap, mergeMap } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
+import { filter, map, mergeMap } from 'rxjs/operators';
 
 import { ManifestService } from './manifest.service';
+import { SystemInfo } from '../models/system-info.model';
 
 @Injectable({ providedIn: 'root' })
 export class SystemInfoService {
-  private _systemInfoLoaded$: Subject<boolean>;
+  private _systemInfoLoaded$: BehaviorSubject<boolean>;
+  private systemInfoLoaded$: Observable<boolean>;
   private _systemInfoInitialized: boolean;
-  private _systemInfo: any;
+  private _systemInfo: SystemInfo;
 
   constructor(
     private manifestService: ManifestService,
     private httpClient: HttpClient
   ) {
-    this._systemInfoLoaded$ = new Subject();
+    this._systemInfoLoaded$ = new BehaviorSubject(false);
+    this.systemInfoLoaded$ = this._systemInfoLoaded$.asObservable();
 
     this._init();
   }
@@ -50,12 +53,8 @@ export class SystemInfoService {
     }
   }
 
-  private _loaded(): Observable<boolean> {
-    return this._systemInfoLoaded$.asObservable();
-  }
-
-  get(): Observable<any> {
-    return this._loaded().pipe(
+  get(): Observable<SystemInfo> {
+    return this.systemInfoLoaded$.pipe(
       filter(loaded => loaded),
       map(() => this._systemInfo)
     );
