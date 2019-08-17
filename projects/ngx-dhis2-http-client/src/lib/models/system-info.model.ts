@@ -112,4 +112,5 @@ export interface SystemInfo {
   keyMessageSmsNotification: boolean;
   keyAcceptanceRequiredForApproval: boolean;
   keyRequireAddToView: boolean;
+  version: string;
 }

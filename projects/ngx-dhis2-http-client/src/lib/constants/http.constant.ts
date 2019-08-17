@@ -7,3 +7,5 @@ export const HTTP_CONFIG: HttpConfig = {
   useIndexDb: false,
   isExternalLink: false
 };
+
+export const DEFAULT_ROOT_URL = '../../../';

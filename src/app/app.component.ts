@@ -10,10 +10,7 @@ import {
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(
-    private httpClient: NgxDhis2HttpClientService,
-    private systemInfo: SystemInfoService
-  ) {
+  constructor(private httpClient: NgxDhis2HttpClientService) {
     httpClient
       .get(
         'users.json?fields=id,name,created&paging=false&filter=name:ilike:John',
@@ -30,7 +27,6 @@ export class AppComponent {
           console.log(error);
         }
       );
-
     httpClient
       .get('users/rWLrZL8rP3K.json?fields=id,name,created', {
         useIndexDb: true
@@ -44,20 +40,15 @@ export class AppComponent {
         }
       );
 
-    this.httpClient
-      .get('dhis-web-commons-stream/ping.action', {
-        useRootUrl: true
-      })
-      .subscribe(res => {
-        console.log(res);
-      });
-
     this.httpClient.me().subscribe(me => {
-      console.log(me);
+      console.log('CURRENT USER: ', me);
+    });
+    this.httpClient.systemInfo().subscribe(info => {
+      console.log('SYSTEM INFO: ', info);
     });
 
-    this.httpClient.get('me/dashboard.json').subscribe(me => {
-      console.log(me);
+    this.httpClient.manifest().subscribe(manifest => {
+      console.log('MANIFEST: ', manifest);
     });
   }
 }
