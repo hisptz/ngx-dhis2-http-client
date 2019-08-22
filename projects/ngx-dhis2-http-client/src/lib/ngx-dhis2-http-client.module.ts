@@ -7,11 +7,11 @@ import {
 } from './services/index-db.service';
 import { NgxDhis2HttpClientService } from './services/ngx-dhis2-http-client.service';
 
-function initializeDb(indexDbServiceConfig: IndexDbServiceConfig) {
+export function initializeDb(indexDbServiceConfig: IndexDbServiceConfig) {
   return () => new IndexDbService(indexDbServiceConfig);
 }
 
-function initializeHttp(httpClient: NgxDhis2HttpClientService) {
+export function initializeHttp(httpClient: NgxDhis2HttpClientService) {
   return () => httpClient.init();
 }
 
