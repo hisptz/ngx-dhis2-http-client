@@ -1,4 +1,8 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError, BehaviorSubject, forkJoin } from 'rxjs';
 import { catchError, map, mergeMap, switchMap, filter } from 'rxjs/operators';
@@ -95,42 +99,59 @@ export class NgxDhis2HttpClientService {
   get(url: string, httpConfig?: HttpConfig): Observable<any> {
     const newHttpConfig = this._getHttpConfig(httpConfig);
 
+    const httpOptions = this._getHttpOptions(newHttpConfig.httpHeaders);
+
     // Make a call directly from url if is external one
     if (newHttpConfig.isExternalLink) {
-      return this.httpClient.get(url);
+      return httpOptions
+        ? this.httpClient.get(url, httpOptions)
+        : this.httpClient.get(url);
     }
 
-    return this._get(url, newHttpConfig);
+    return this._get(url, newHttpConfig, httpOptions);
   }
 
   post(url: string, data: any, httpConfig?: HttpConfig) {
-    return this._getRootUrl(this._getHttpConfig(httpConfig)).pipe(
+    const newHttpConfig = this._getHttpConfig(httpConfig);
+
+    const httpOptions = this._getHttpOptions(newHttpConfig.httpHeaders);
+
+    return this._getRootUrl(newHttpConfig).pipe(
       mergeMap(rootUrl =>
-        this.httpClient
-          .post(rootUrl + url, data)
-          .pipe(catchError(this._handleError))
+        (httpOptions
+          ? this.httpClient.post(rootUrl + url, data, httpOptions)
+          : this.httpClient.post(rootUrl + url, data)
+        ).pipe(catchError(this._handleError))
       ),
       catchError(this._handleError)
     );
   }
 
   put(url: string, data: any, httpConfig?: HttpConfig) {
-    return this._getRootUrl(this._getHttpConfig(httpConfig)).pipe(
+    const newHttpConfig = this._getHttpConfig(httpConfig);
+
+    const httpOptions = this._getHttpOptions(newHttpConfig.httpHeaders);
+    return this._getRootUrl(newHttpConfig).pipe(
       mergeMap(rootUrl =>
-        this.httpClient
-          .put(rootUrl + url, data)
-          .pipe(catchError(this._handleError))
+        (httpOptions
+          ? this.httpClient.put(rootUrl + url, data, httpOptions)
+          : this.httpClient.put(rootUrl + url, data)
+        ).pipe(catchError(this._handleError))
       ),
       catchError(this._handleError)
     );
   }
 
   delete(url: string, httpConfig?: HttpConfig) {
-    return this._getRootUrl(this._getHttpConfig(httpConfig)).pipe(
+    const newHttpConfig = this._getHttpConfig(httpConfig);
+
+    const httpOptions = this._getHttpOptions(newHttpConfig.httpHeaders);
+    return this._getRootUrl(newHttpConfig).pipe(
       mergeMap(rootUrl =>
-        this.httpClient
-          .delete(rootUrl + url)
-          .pipe(catchError(this._handleError))
+        (httpOptions
+          ? this.httpClient.delete(rootUrl + url, httpOptions)
+          : this.httpClient.delete(rootUrl + url)
+        ).pipe(catchError(this._handleError))
       ),
       catchError(this._handleError)
     );
@@ -173,23 +194,26 @@ export class NgxDhis2HttpClientService {
     );
   }
 
-  private _get(url, httpConfig: HttpConfig) {
+  private _get(url, httpConfig: HttpConfig, httpOptions: any) {
     if (httpConfig.useIndexDb) {
-      return this._getFromIndexDb(url, httpConfig);
+      return this._getFromIndexDb(url, httpConfig, httpOptions);
     }
 
-    return this._getFromServer(url, httpConfig);
+    return this._getFromServer(url, httpConfig, httpOptions);
   }
 
-  private _getFromServer(url, httpConfig: HttpConfig) {
+  private _getFromServer(url, httpConfig: HttpConfig, httpOptions: any) {
     return this._getRootUrl(httpConfig).pipe(
       mergeMap(rootUrl =>
-        this.httpClient.get(rootUrl + url).pipe(catchError(this._handleError))
+        (httpOptions
+          ? this.httpClient.get(rootUrl + url, httpOptions)
+          : this.httpClient.get(rootUrl + url)
+        ).pipe(catchError(this._handleError))
       ),
       catchError(this._handleError)
     );
   }
-  private _getFromIndexDb(url, httpConfig: HttpConfig) {
+  private _getFromIndexDb(url, httpConfig: HttpConfig, httpOptions: any) {
     const urlContent = this._deriveUrlContent(url);
     const schemaName =
       urlContent && urlContent.schema ? urlContent.schema.name : undefined;
@@ -199,7 +223,7 @@ export class NgxDhis2HttpClientService {
 
     if (!schemaName) {
       console.warn('index db operations failed, Error: Schema is not supplied');
-      return this._getFromServer(url, httpConfig);
+      return this._getFromServer(url, httpConfig, httpOptions);
     }
 
     return (id
@@ -212,7 +236,7 @@ export class NgxDhis2HttpClientService {
           (indexDbResponse[schemaName] &&
             indexDbResponse[schemaName].length === 0)
         ) {
-          return this._getFromServer(url, httpConfig).pipe(
+          return this._getFromServer(url, httpConfig, httpOptions).pipe(
             mergeMap((serverResponse: any) => {
               if (!serverResponse) {
                 return of(null);
@@ -327,5 +351,14 @@ export class NgxDhis2HttpClientService {
             }`;
       })
     );
+  }
+
+  private _getHttpOptions(httpHeaderOptions: any) {
+    console.log(httpHeaderOptions);
+    return httpHeaderOptions
+      ? {
+          headers: new HttpHeaders(httpHeaderOptions)
+        }
+      : null;
   }
 }

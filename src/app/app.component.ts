@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { NgxDhis2HttpClientService } from '@iapps/ngx-dhis2-http-client';
+import * as _ from 'lodash';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -7,7 +9,10 @@ import { NgxDhis2HttpClientService } from '@iapps/ngx-dhis2-http-client';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(private httpClient: NgxDhis2HttpClientService) {
+  constructor(
+    private httpClient: NgxDhis2HttpClientService,
+    private http: HttpClient
+  ) {
     httpClient
       .get(
         'users.json?fields=id,name,created&paging=false&filter=name:ilike:John',
@@ -47,5 +52,35 @@ export class AppComponent {
     this.httpClient.manifest().subscribe(manifest => {
       console.log('MANIFEST: ', manifest);
     });
+  }
+
+  onPost(e) {
+    const randomId = _.random(1000, 1000000);
+    e.stopPropagation();
+    // this.httpClient
+    //   .post(`dataStore/http-namespace/${randomId}`, 'string value', {
+    //     httpHeaders: { 'Content-Type': 'text/plain' }
+    //   })
+    //   .subscribe(res => {
+    //     console.log(res);
+    //   });
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json;charset=UTF-8'
+      })
+    };
+
+    console.log(`\"Jane Doe, Mike Smith\"`);
+
+    this.http
+      .post(
+        `api/dataStore/http-namespace/${randomId}`,
+        `\"Jane Doe, Mike Smith\"`,
+        httpOptions
+      )
+      .subscribe(res => {
+        console.log(res);
+      });
   }
 }

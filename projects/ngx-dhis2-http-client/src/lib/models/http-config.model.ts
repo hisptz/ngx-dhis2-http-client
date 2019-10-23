@@ -1,3 +1,5 @@
+import { HttpHeaders } from '@angular/common/http';
+
 export interface HttpConfig {
   includeVersionNumber?: boolean;
   preferPreviousApiVersion?: boolean;
@@ -7,6 +9,7 @@ export interface HttpConfig {
   indexDbConfig?: {
     schema: string;
   };
+  httpHeaders?: any;
 }
 
 export interface IndexDbSchema {
