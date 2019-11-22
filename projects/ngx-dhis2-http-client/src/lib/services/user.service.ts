@@ -7,21 +7,24 @@ import { User } from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
-  constructor() {}
+    constructor() {}
 
-  getCurrentUser(httpClient: HttpClient, rootUrl: string): Observable<User> {
-    return forkJoin(
-      httpClient.get(
-        rootUrl +
-          'api/me.json?fields=id,name,displayName,created,' +
-          'lastUpdated,email,dataViewOrganisationUnits[id,name,level],' +
-          'organisationUnits[id,name,level],userCredentials[username]'
-      ),
-      httpClient.get(`${rootUrl}api/me/authorization`)
-    ).pipe(
-      map((currentUserResults: any[]) => {
-        return { ...currentUserResults[0], authorities: currentUserResults[1] };
-      })
-    );
-  }
+    getCurrentUser(httpClient: HttpClient, rootUrl: string): Observable<User> {
+        return forkJoin(
+            httpClient.get(
+                rootUrl +
+                    'api/me?fields=id,name,displayName,created,' +
+                    'lastUpdated,email,dataViewOrganisationUnits[id,name,level],' +
+                    'organisationUnits[id,name,level],userCredentials[username]'
+            ),
+            httpClient.get(`${rootUrl}api/me/authorization`)
+        ).pipe(
+            map((currentUserResults: any[]) => {
+                return {
+                    ...currentUserResults[0],
+                    authorities: currentUserResults[1],
+                };
+            })
+        );
+    }
 }
