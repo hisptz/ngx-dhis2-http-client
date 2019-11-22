@@ -54,50 +54,48 @@ export class NgxDhis2HttpClientService {
         };
         this._loaded$ = new BehaviorSubject<boolean>(false);
         this.loaded$ = this._loaded$.asObservable();
+
+        this.init();
     }
 
-    init(): Promise<any> {
-        return new Promise((resolve, reject) => {
-            this.manifestService
-                .getManifest(this.httpClient)
-                .pipe(
-                    switchMap((manifest: Manifest) => {
-                        const rootUrl = getRootUrl(manifest);
-                        return forkJoin(
-                            this.systemInfoService
-                                .get(this.httpClient, rootUrl)
-                                .pipe(catchError(this._handleError)),
-                            this.userService
-                                .getCurrentUser(this.httpClient, rootUrl)
-                                .pipe(catchError(this._handleError))
-                        ).pipe(
-                            map((res: any[]) => {
-                                return {
-                                    rootUrl,
-                                    manifest,
-                                    systemInfo: res[0],
-                                    currentUser: res[1],
-                                };
-                            })
-                        );
-                    })
-                )
-                .subscribe(
-                    res => {
-                        this._instance = {
-                            ...this._instance,
-                            ...res,
-                            version: getSystemVersion(res.systemInfo),
-                        };
-                        this._loaded$.next(true);
-                        resolve(true);
-                    },
-                    (error: ErrorMessage) => {
-                        this._error = error;
-                        reject(error);
-                    }
-                );
-        });
+    init() {
+        this.manifestService
+            .getManifest(this.httpClient)
+            .pipe(
+                switchMap((manifest: Manifest) => {
+                    const rootUrl = getRootUrl(manifest);
+                    return forkJoin(
+                        this.systemInfoService
+                            .get(this.httpClient, rootUrl)
+                            .pipe(catchError(this._handleError)),
+                        this.userService
+                            .getCurrentUser(this.httpClient, rootUrl)
+                            .pipe(catchError(this._handleError))
+                    ).pipe(
+                        map((res: any[]) => {
+                            return {
+                                rootUrl,
+                                manifest,
+                                systemInfo: res[0],
+                                currentUser: res[1],
+                            };
+                        })
+                    );
+                })
+            )
+            .subscribe(
+                res => {
+                    this._instance = {
+                        ...this._instance,
+                        ...res,
+                        version: getSystemVersion(res.systemInfo),
+                    };
+                    this._loaded$.next(true);
+                },
+                (error: ErrorMessage) => {
+                    this._error = error;
+                }
+            );
     }
 
     get(url: string, httpConfig?: HttpConfig): Observable<any> {
