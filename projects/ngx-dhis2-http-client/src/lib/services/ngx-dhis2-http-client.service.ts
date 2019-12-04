@@ -38,6 +38,7 @@ export class NgxDhis2HttpClientService {
     private _loaded$: BehaviorSubject<boolean>;
     private loaded$: Observable<boolean>;
     private _instance: Instance;
+    private _initiated: boolean;
     constructor(
         private httpClient: HttpClient,
         private manifestService: ManifestService,
@@ -55,7 +56,10 @@ export class NgxDhis2HttpClientService {
         this._loaded$ = new BehaviorSubject<boolean>(false);
         this.loaded$ = this._loaded$.asObservable();
 
-        this.init();
+        if (!this._initiated) {
+            this._initiated = true;
+            this.init();
+        }
     }
 
     init() {
