@@ -23,6 +23,8 @@ import { ErrorMessage } from '../models/error-message.model';
 import { getRootUrl } from '../helpers/get-root-url.helper';
 import { getSystemVersion } from '../helpers/get-system-version.helper';
 import { SystemInfo } from '../models/system-info.model';
+import { IndexDBParams } from '../models/index-db-params.model';
+import { deduceUrlContent } from '../helpers/deduce-url-content.helper';
 
 interface Instance {
     manifest: Manifest;
@@ -220,7 +222,7 @@ export class NgxDhis2HttpClientService {
         );
     }
     private _getFromIndexDb(url, httpConfig: HttpConfig, httpOptions: any) {
-        const urlContent = this._deriveUrlContent(url);
+        const urlContent = deduceUrlContent(url);
         const schemaName =
             urlContent && urlContent.schema
                 ? urlContent.schema.name
@@ -228,6 +230,8 @@ export class NgxDhis2HttpClientService {
 
         const id =
             urlContent && urlContent.schema ? urlContent.schema.id : undefined;
+
+        const params: IndexDBParams = urlContent ? urlContent.params || {} : {};
 
         if (!schemaName) {
             console.warn(
@@ -238,7 +242,7 @@ export class NgxDhis2HttpClientService {
 
         return (id
             ? this.indexDbService.findById(schemaName, id)
-            : this.indexDbService.findAll(schemaName)
+            : this.indexDbService.findAll(schemaName, params)
         ).pipe(
             mergeMap((indexDbResponse: any) => {
                 if (
@@ -272,35 +276,6 @@ export class NgxDhis2HttpClientService {
                 return of(indexDbResponse);
             })
         );
-    }
-    private _deriveUrlContent(url) {
-        const splitedUrl = (url || '').split('?');
-        const schemaPart = (splitedUrl[0] || '').split('/') || [];
-        const schemaName = ((schemaPart[0] || '').split('.') || [])[0];
-
-        const schema = {
-            name:
-                schemaName === 'dataStore'
-                    ? `dataStore_${((schemaPart[1] || '').split('.') || [])[0]}`
-                    : schemaName,
-            id:
-                schemaName === 'dataStore'
-                    ? (schemaPart[2] || '').replace('.json', '')
-                    : (schemaPart[1] || '').replace('.json', ''),
-        };
-
-        const params = {};
-        ((splitedUrl[1] || '').split('&') || []).forEach(param => {
-            const splitedParams = param.split('=');
-            if (splitedParams[0] || splitedParams[0] !== '') {
-                params[splitedParams[0]] = [
-                    ...(params[splitedParams[0]] || []),
-                    splitedParams[1],
-                ];
-            }
-        });
-
-        return { schema, params };
     }
 
     private _getHttpConfig(httpConfig: HttpConfig) {

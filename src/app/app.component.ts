@@ -14,7 +14,9 @@ export class AppComponent {
         private http: HttpClient
     ) {
         this.httpClient
-            .get('organisationUnits.json', { useIndexDb: true })
+            .get('organisationUnits.json?pageSize=10&page=2', {
+                useIndexDb: true,
+            })
             .subscribe(orgUnits => {
                 console.log(orgUnits);
             });

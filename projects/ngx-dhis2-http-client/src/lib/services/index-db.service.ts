@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import Dexie from 'dexie';
 import { Observable } from 'rxjs';
+import { IndexDBParams } from '../models/index-db-params.model';
 
 export interface IndexDbConfig {
     namespace: string;
@@ -39,9 +40,9 @@ export class IndexDbService extends Dexie {
         });
     }
 
-    findAll(schemaName: string): Observable<any> {
+    findAll(schemaName: string, params: IndexDBParams): Observable<any> {
         return new Observable(observer => {
-            this.table(schemaName)
+            this._getTableSchema(schemaName, params)
                 .toArray()
                 .then(
                     (dataArray: any[]) => {
@@ -87,5 +88,17 @@ export class IndexDbService extends Dexie {
                     }
                 );
         });
+    }
+
+    private _getTableSchema(schemaName: string, params: IndexDBParams) {
+        if (!params || !params.pageSize) {
+            return this.table(schemaName);
+        }
+        const page = params.page || 1;
+
+        return this.table(schemaName)
+            .reverse()
+            .offset(page * params.pageSize)
+            .limit(params.pageSize);
     }
 }
