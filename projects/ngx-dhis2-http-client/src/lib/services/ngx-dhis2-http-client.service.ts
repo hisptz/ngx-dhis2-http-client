@@ -4,7 +4,7 @@ import {
     HttpHeaders,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError, BehaviorSubject, forkJoin } from 'rxjs';
+import { Observable, of, throwError, BehaviorSubject, zip } from 'rxjs';
 import { catchError, map, mergeMap, switchMap, filter } from 'rxjs/operators';
 
 import {
@@ -70,7 +70,7 @@ export class NgxDhis2HttpClientService {
             .pipe(
                 switchMap((manifest: Manifest) => {
                     const rootUrl = getRootUrl(manifest);
-                    return forkJoin(
+                    return zip(
                         this.systemInfoService
                             .get(this.httpClient, rootUrl)
                             .pipe(catchError(this._handleError)),

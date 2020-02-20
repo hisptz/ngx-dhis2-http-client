@@ -1,6 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { NgxDhis2HttpClientService } from '@iapps/ngx-dhis2-http-client';
+import {
+    NgxDhis2HttpClientService,
+    Manifest,
+} from '@iapps/ngx-dhis2-http-client';
 import * as _ from 'lodash';
 
 @Component({
@@ -13,6 +16,9 @@ export class AppComponent {
         private httpClient: NgxDhis2HttpClientService,
         private http: HttpClient
     ) {
+        this.httpClient.manifest().subscribe((manifest: Manifest) => {
+            console.log(manifest);
+        });
         this.httpClient
             .get(
                 'organisationUnits.json?fields=id,name,level,parent,path&order=level:asc&order=name:asc&filter=path:ilike:O6uvpzGd5pu&pageSize=100&page=1',

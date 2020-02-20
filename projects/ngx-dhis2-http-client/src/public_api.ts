@@ -1,6 +1,4 @@
-export {
-  NgxDhis2HttpClientService
-} from './lib/services/ngx-dhis2-http-client.service';
+export { NgxDhis2HttpClientService } from './lib/services/ngx-dhis2-http-client.service';
 export { SystemInfoService } from './lib/services/system-info.service';
 export { ManifestService } from './lib/services/manifest.service';
 export { User } from './lib/models/user.model';

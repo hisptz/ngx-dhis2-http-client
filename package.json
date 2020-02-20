@@ -1,69 +1,69 @@
 {
-  "name": "ngx-dhis2-http-client-module",
-  "version": "0.0.0",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build --prod --aot",
-    "build-lib": "ng build ngx-dhis2-http-client --prod",
-    "build-lib-dev": "npm run build-lib && cd dist/ngx-dhis2-http-client && npm pack && cd ../../ && npm install dist/ngx-dhis2-http-client/*.tgz",
-    "publish": "npm run build-lib && cd dist/ngx-dhis2-http-client && npm publish --access public && cd ../../",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/hisptz/ngx-dhis2-http-client.git"
-  },
-  "license": "LGPL-3.0",
-  "private": true,
-  "dependencies": {
-    "@angular/animations": "^9.0.2",
-    "@angular/common": "^9.0.2",
-    "@angular/compiler": "^9.0.2",
-    "@angular/core": "^9.0.2",
-    "@angular/forms": "^9.0.2",
-    "@angular/http": "^7.2.16",
-    "@angular/platform-browser": "^9.0.2",
-    "@angular/platform-browser-dynamic": "^9.0.2",
-    "@angular/router": "^9.0.2",
-    "@iapps/ngx-dhis2-http-client": "file:dist/ngx-dhis2-http-client/iapps-ngx-dhis2-http-client-2.0.8-beta.5.tgz",
-    "core-js": "^3.6.4",
-    "dexie": "^2.0.4",
-    "rxjs": "^6.5.4",
-    "tslib": "^1.10.0",
-    "zone.js": "~0.10.2"
-  },
-  "devDependencies": {
-    "@angular-devkit/build-angular": "~0.900.2",
-    "@angular-devkit/build-ng-packagr": "~0.900.2",
-    "@angular/cli": "~9.0.2",
-    "@angular/compiler-cli": "^9.0.2",
-    "@angular/language-service": "^9.0.2",
-    "@types/jasmine": "~3.5.5",
-    "@types/jasminewd2": "~2.0.8",
-    "@types/node": "^12.11.1",
-    "codelyzer": "^5.1.2",
-    "commitizen": "^4.0.3",
-    "cz-conventional-changelog": "^3.1.0",
-    "husky": "^4.2.3",
-    "jasmine-core": "~3.5.0",
-    "jasmine-spec-reporter": "~4.2.1",
-    "karma": "^4.4.1",
-    "karma-chrome-launcher": "~3.1.0",
-    "karma-coverage-istanbul-reporter": "~2.1.1",
-    "karma-jasmine": "~3.1.1",
-    "karma-jasmine-html-reporter": "^1.5.2",
-    "ng-packagr": "^9.0.0",
-    "protractor": "^6.0.0",
-    "ts-node": "~8.6.2",
-    "tslint": "~6.0.0",
-    "typescript": "~3.7.5"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
+    "name": "ngx-dhis2-http-client-module",
+    "version": "0.0.0",
+    "scripts": {
+        "ng": "ng",
+        "start": "ng serve",
+        "build": "ng build --prod --aot",
+        "build-lib": "ng build ngx-dhis2-http-client --prod",
+        "build-lib-dev": "npm run build-lib && cd dist/ngx-dhis2-http-client && npm pack && cd ../../ && npm install dist/ngx-dhis2-http-client/*.tgz",
+        "publish": "npm run build-lib && cd dist/ngx-dhis2-http-client && npm publish --access public && cd ../../",
+        "test": "ng test",
+        "lint": "ng lint",
+        "e2e": "ng e2e"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/hisptz/ngx-dhis2-http-client.git"
+    },
+    "license": "LGPL-3.0",
+    "private": true,
+    "dependencies": {
+        "@angular/animations": "^9.0.2",
+        "@angular/common": "^9.0.2",
+        "@angular/compiler": "^9.0.2",
+        "@angular/core": "^9.0.2",
+        "@angular/forms": "^9.0.2",
+        "@angular/http": "^7.2.16",
+        "@angular/platform-browser": "^9.0.2",
+        "@angular/platform-browser-dynamic": "^9.0.2",
+        "@angular/router": "^9.0.2",
+        "@iapps/ngx-dhis2-http-client": "dist/ngx-dhis2-http-client/iapps-ngx-dhis2-http-client-2.0.8-beta.5.tgz",
+        "core-js": "^3.6.4",
+        "dexie": "^2.0.4",
+        "rxjs": "^6.5.4",
+        "tslib": "^1.10.0",
+        "zone.js": "~0.10.2"
+    },
+    "devDependencies": {
+        "@angular-devkit/build-angular": "~0.900.2",
+        "@angular-devkit/build-ng-packagr": "~0.900.2",
+        "@angular/cli": "~9.0.2",
+        "@angular/compiler-cli": "^9.0.2",
+        "@angular/language-service": "^9.0.2",
+        "@types/jasmine": "~3.5.5",
+        "@types/jasminewd2": "~2.0.8",
+        "@types/node": "^12.11.1",
+        "codelyzer": "^5.1.2",
+        "commitizen": "^4.0.3",
+        "cz-conventional-changelog": "^3.1.0",
+        "husky": "^4.2.3",
+        "jasmine-core": "~3.5.0",
+        "jasmine-spec-reporter": "~4.2.1",
+        "karma": "^4.4.1",
+        "karma-chrome-launcher": "~3.1.0",
+        "karma-coverage-istanbul-reporter": "~2.1.1",
+        "karma-jasmine": "~3.1.1",
+        "karma-jasmine-html-reporter": "^1.5.2",
+        "ng-packagr": "^9.0.0",
+        "protractor": "^6.0.0",
+        "ts-node": "~8.6.2",
+        "tslint": "~6.0.0",
+        "typescript": "~3.7.5"
+    },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
     }
-  }
 }
