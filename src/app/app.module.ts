@@ -14,7 +14,7 @@ import { NgxDhis2HttpClientModule } from '@iapps/ngx-dhis2-http-client';
             models: {
                 users: 'id',
                 organisationUnitLevels: 'id',
-                organisationUnits: 'id',
+                organisationUnits: 'id,name,level',
                 organisationUnitGroups: 'id',
                 dataStore_scorecards: 'id',
             },

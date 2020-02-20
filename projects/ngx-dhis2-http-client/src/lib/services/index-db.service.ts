@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import Dexie from 'dexie';
 import { Observable } from 'rxjs';
 import { IndexDBParams } from '../models/index-db-params.model';
+import { getOrderByColumns } from '../helpers/get-order-by-columns.helper';
 
 export interface IndexDbConfig {
     namespace: string;
@@ -91,14 +92,34 @@ export class IndexDbService extends Dexie {
     }
 
     private _getTableSchema(schemaName: string, params: IndexDBParams) {
-        if (!params || !params.pageSize) {
-            return this.table(schemaName);
+        const tableSchema = this.table(schemaName);
+        if (!params) {
+            return tableSchema;
         }
-        const page = params.page || 1;
 
-        return this.table(schemaName)
-            .reverse()
-            .offset(page * params.pageSize)
-            .limit(params.pageSize);
+        if (params.pageSize) {
+            const page = params.page || 1;
+            const pagedTableSchema = tableSchema
+                .offset(page * params.pageSize)
+                .limit(params.pageSize);
+
+            if (!params.order && !params.filter) {
+                return pagedTableSchema;
+            } else if (params.order && !params.filter) {
+                const orderByColumns = getOrderByColumns(params.order);
+
+                if (orderByColumns.length === 0) {
+                    return pagedTableSchema;
+                }
+
+                // TODO: Need to find a way to order by more than one column, currently dexie does not support this
+                return tableSchema
+                    .orderBy(orderByColumns[0])
+                    .offset(page === 1 ? 0 : page * params.pageSize)
+                    .limit(params.pageSize);
+            }
+        }
+
+        return tableSchema;
     }
 }

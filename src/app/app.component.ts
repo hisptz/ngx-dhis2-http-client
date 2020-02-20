@@ -14,9 +14,12 @@ export class AppComponent {
         private http: HttpClient
     ) {
         this.httpClient
-            .get('organisationUnits.json?pageSize=10&page=2', {
-                useIndexDb: true,
-            })
+            .get(
+                'organisationUnits.json?fields=id,name,level,parent&order=level:asc&order=name:asc&pageSize=10&page=1',
+                {
+                    useIndexDb: true,
+                }
+            )
             .subscribe(orgUnits => {
                 console.log(orgUnits);
             });

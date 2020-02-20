@@ -27,5 +27,6 @@ function sanitizeParams(params: any): IndexDBParams {
             : undefined,
         fields: params.fields ? params.fields[0] : undefined,
         filter: params.filter,
+        order: params.order,
     };
 }
