@@ -15,7 +15,7 @@ export class AppComponent {
     ) {
         this.httpClient
             .get(
-                'organisationUnits.json?fields=id,name,level,parent&order=level:asc&order=name:asc&pageSize=10&page=1',
+                'organisationUnits.json?fields=id,name,level,parent,path&order=level:asc&order=name:asc&filter=path:ilike:O6uvpzGd5pu&pageSize=100&page=1',
                 {
                     useIndexDb: true,
                 }

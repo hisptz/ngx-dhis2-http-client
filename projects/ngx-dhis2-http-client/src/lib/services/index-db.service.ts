@@ -3,6 +3,7 @@ import Dexie from 'dexie';
 import { Observable } from 'rxjs';
 import { IndexDBParams } from '../models/index-db-params.model';
 import { getOrderByColumns } from '../helpers/get-order-by-columns.helper';
+import { filterIndexDBData } from '../helpers/filter-index-db-data.helper';
 
 export interface IndexDbConfig {
     namespace: string;
@@ -48,7 +49,10 @@ export class IndexDbService extends Dexie {
                 .then(
                     (dataArray: any[]) => {
                         observer.next({
-                            [schemaName]: dataArray,
+                            [schemaName]: filterIndexDBData(
+                                dataArray,
+                                params.filter
+                            ),
                         });
                         observer.complete();
                     },
@@ -97,15 +101,14 @@ export class IndexDbService extends Dexie {
             return tableSchema;
         }
 
+        // TODO: Find best way to simplify this code
         if (params.pageSize) {
             const page = params.page || 1;
             const pagedTableSchema = tableSchema
                 .offset(page * params.pageSize)
                 .limit(params.pageSize);
 
-            if (!params.order && !params.filter) {
-                return pagedTableSchema;
-            } else if (params.order && !params.filter) {
+            if (params.order) {
                 const orderByColumns = getOrderByColumns(params.order);
 
                 if (orderByColumns.length === 0) {
@@ -118,6 +121,17 @@ export class IndexDbService extends Dexie {
                     .offset(page === 1 ? 0 : page * params.pageSize)
                     .limit(params.pageSize);
             }
+
+            return pagedTableSchema;
+        } else if (params.order) {
+            const orderByColumns = getOrderByColumns(params.order);
+
+            if (orderByColumns.length === 0) {
+                return tableSchema;
+            }
+
+            // TODO: Need to find a way to order by more than one column, currently dexie does not support this
+            return tableSchema.orderBy(orderByColumns[0]);
         }
 
         return tableSchema;
