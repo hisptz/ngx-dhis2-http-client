@@ -268,6 +268,7 @@ export class NgxDhis2HttpClientService {
                         })
                     );
                 }
+
                 return of(indexDbResponse);
             })
         );
