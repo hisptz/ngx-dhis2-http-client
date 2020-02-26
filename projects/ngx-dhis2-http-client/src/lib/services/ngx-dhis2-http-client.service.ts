@@ -25,6 +25,7 @@ import { getSystemVersion } from '../helpers/get-system-version.helper';
 import { SystemInfo } from '../models/system-info.model';
 import { IndexDBParams } from '../models/index-db-params.model';
 import { deduceUrlContent } from '../helpers/deduce-url-content.helper';
+import { omit } from 'lodash';
 
 interface Instance {
     manifest: Manifest;
@@ -248,10 +249,12 @@ export class NgxDhis2HttpClientService {
                                             schemaName,
                                             serverResponse
                                         )
-                                      : this.indexDbService.saveBulk(
-                                            schemaName,
-                                            serverResponse[schemaName]
-                                        );
+                                      : this.indexDbService
+                                            .saveBulk(
+                                                schemaName,
+                                                serverResponse[schemaName]
+                                            )
+                                            .pipe(map(() => serverResponse));
                               })
                           );
                 }

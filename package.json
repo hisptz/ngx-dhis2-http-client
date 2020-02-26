@@ -28,6 +28,7 @@
         "@angular/platform-browser": "^9.0.2",
         "@angular/platform-browser-dynamic": "^9.0.2",
         "@angular/router": "^9.0.2",
+        "@iapps/ngx-dhis2-http-client": "file:dist/ngx-dhis2-http-client/iapps-ngx-dhis2-http-client-2.0.8-rc.1.tgz",
         "core-js": "^3.6.4",
         "dexie": "^2.0.4",
         "rxjs": "^6.5.4",
