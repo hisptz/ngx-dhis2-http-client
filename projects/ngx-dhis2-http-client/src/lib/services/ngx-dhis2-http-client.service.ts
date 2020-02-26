@@ -202,25 +202,6 @@ export class NgxDhis2HttpClientService {
         );
     }
 
-    private _get(url, httpConfig: HttpConfig, httpOptions: any) {
-        if (httpConfig.useIndexDb) {
-            return this._getFromIndexDb(url, httpConfig, httpOptions);
-        }
-
-        return this._getFromServer(url, httpConfig, httpOptions);
-    }
-
-    private _getFromServer(url, httpConfig: HttpConfig, httpOptions: any) {
-        return this._getRootUrl(httpConfig).pipe(
-            mergeMap(rootUrl =>
-                (httpOptions
-                    ? this.httpClient.get(rootUrl + url, httpOptions)
-                    : this.httpClient.get(rootUrl + url)
-                ).pipe(catchError(this._handleError))
-            ),
-            catchError(this._handleError)
-        );
-    }
     private _getFromIndexDb(url, httpConfig: HttpConfig, httpOptions: any) {
         const urlContent = deduceUrlContent(url);
         const schemaName =
@@ -250,31 +231,53 @@ export class NgxDhis2HttpClientService {
                     (indexDbResponse[schemaName] &&
                         indexDbResponse[schemaName].length === 0)
                 ) {
-                    return this._getFromServer(
-                        url,
-                        httpConfig,
-                        httpOptions
-                    ).pipe(
-                        mergeMap((serverResponse: any) => {
-                            if (!serverResponse) {
-                                return of(null);
-                            }
+                    return !httpConfig.fetchOnlineIfNotExist
+                        ? of(id ? null : { [schemaName]: [] })
+                        : this._getFromServer(
+                              url,
+                              httpConfig,
+                              httpOptions
+                          ).pipe(
+                              mergeMap((serverResponse: any) => {
+                                  if (!serverResponse) {
+                                      return of(null);
+                                  }
 
-                            return id
-                                ? this.indexDbService.saveOne(
-                                      schemaName,
-                                      serverResponse
-                                  )
-                                : this.indexDbService.saveBulk(
-                                      schemaName,
-                                      serverResponse[schemaName]
-                                  );
-                        })
-                    );
+                                  return id
+                                      ? this.indexDbService.saveOne(
+                                            schemaName,
+                                            serverResponse
+                                        )
+                                      : this.indexDbService.saveBulk(
+                                            schemaName,
+                                            serverResponse[schemaName]
+                                        );
+                              })
+                          );
                 }
 
                 return of(indexDbResponse);
             })
+        );
+    }
+
+    private _get(url, httpConfig: HttpConfig, httpOptions: any) {
+        if (httpConfig.useIndexDb) {
+            return this._getFromIndexDb(url, httpConfig, httpOptions);
+        }
+
+        return this._getFromServer(url, httpConfig, httpOptions);
+    }
+
+    private _getFromServer(url, httpConfig: HttpConfig, httpOptions: any) {
+        return this._getRootUrl(httpConfig).pipe(
+            mergeMap(rootUrl =>
+                (httpOptions
+                    ? this.httpClient.get(rootUrl + url, httpOptions)
+                    : this.httpClient.get(rootUrl + url)
+                ).pipe(catchError(this._handleError))
+            ),
+            catchError(this._handleError)
         );
     }
 

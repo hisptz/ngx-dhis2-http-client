@@ -5,6 +5,7 @@ export const HTTP_CONFIG: HttpConfig = {
     preferPreviousApiVersion: false,
     useRootUrl: false,
     useIndexDb: false,
+    fetchOnlineIfNotExist: true,
     isExternalLink: false,
 };
 

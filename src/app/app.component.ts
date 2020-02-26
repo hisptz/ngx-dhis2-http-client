@@ -29,6 +29,15 @@ export class AppComponent {
             .subscribe(orgUnits => {
                 console.log(orgUnits);
             });
+
+        this.httpClient
+            .get('users.json', {
+                useIndexDb: true,
+                fetchOnlineIfNotExist: false,
+            })
+            .subscribe(users => {
+                console.log(users);
+            });
     }
 
     onPost(e) {
